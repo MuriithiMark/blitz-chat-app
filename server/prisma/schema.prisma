@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String            @id @default(uuid())
+  username              String            @unique
+  email                 String            @unique
+  name                  String?
+  hashedPassword        String
+  avatarUrl             String
+  isVerified            Boolean           @default(false)
+  isDeleted             Boolean           @default(false)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime
+  posts                 Post[]
+  comments              Comment[]
+  replies               Reply[]
+  postReactions         PostReaction[]
+  commentReactions      CommentReaction[]
+  groups                GroupMember[]
+  notifications         Notification[]
+  friendshipInitiatorId FriendShip[]      @relation("FriendShipIntiator")
+  friendshipAcceptorId  FriendShip[]      @relation("FriendShipAcceptor")
+}
+
+model Post {
+  id        String         @id @default(uuid())
+  title     String
+  content   String
+  userId    String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime
+  comment   Comment[]
+  reactions PostReaction[]
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Comments are done on posts
+model Comment {
+  id        String            @id @default(uuid())
+  userId    String
+  postId    String
+  content   String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime
+  reactions CommentReaction[]
+  replies   Reply[]
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post              @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Reply {
+  id        String  @id @default(uuid())
+  commentId String
+  userId    String
+  content   String
+  comment   Comment @relation(fields: [commentId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model FriendShip {
+  id          String        @id @default(uuid())
+  userId      String
+  friendId    String
+  hasAccepted Boolean       @default(false)
+  isDeclined  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  acceptedOn  DateTime
+  messages    UserMessage[]
+  user        User          @relation("FriendShipIntiator", fields: [userId], references: [id])
+  friend      User          @relation("FriendShipAcceptor", fields: [friendId], references: [id])
+}
+
+// Reactions
+// stores upvotes, downvotes
+// status -> true for upvote, false for downvote
+// stores status for both posts and comments
+// might be separated into PostStatus, CommentStatus
+model PostReaction {
+  id     Int     @id @default(autoincrement())
+  postId String
+  userId String
+  status Boolean
+  post   Post    @relation(fields: [postId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+model CommentReaction {
+  id        Int     @id @default(autoincrement())
+  commentId String
+  userId    String
+  status    Boolean
+  comment   Comment @relation(fields: [commentId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Group {
+  id           String         @id @default(uuid())
+  name         String
+  about        String?
+  createdAt    DateTime       @default(now())
+  messages     GroupMessage[]
+  GroupMembers GroupMember[]
+}
+
+model GroupMember {
+  memberShipId String @id @default(uuid())
+  groupId      String
+  memberId     String
+  group        Group  @relation(fields: [groupId], references: [id])
+  member       User   @relation(fields: [memberId], references: [id])
+}
+
+model GroupMessage {
+  id        String   @id @default(uuid())
+  groupId   String
+  content   String
+  createdAt DateTime @default(now())
+  isDeleted Boolean  @default(false)
+  group     Group    @relation(fields: [groupId], references: [id])
+}
+
+model UserMessage {
+  id           String     @id @default(uuid())
+  friendShipId String // can only privately message friends
+  content      String
+  senderId     String
+  recipientId  String
+  createdAt    DateTime   @default(now())
+  friendShip   FriendShip @relation(fields: [friendShipId], references: [id])
+}
+
+model Notification {
+  id         String @id @default(uuid())
+  userId     String
+  title      String
+  content    String
+  alertLevel String @default("info") // possible values -> info/warn
+  user       User   @relation(fields: [userId], references: [id])
+}
