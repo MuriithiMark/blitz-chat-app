@@ -1,18 +1,14 @@
 import { Router} from "express";
 import prisma from "../utils/prisma.js";
+import AuthController from "../controllers/Auth.controller.js";
 
 const authRouter = Router();
 
-authRouter.get("/",async (req, res) => {
-    const users = await prisma.users.findMany();
-    res.send(users).end()
-})
+authRouter.get("/register", AuthController.registerUser)
 
+authRouter.post("/login", AuthController.loginUser)
 
-authRouter.post("/", async (req, res) => {
-    await prisma.users.create({
-        data: req.body
-    })
-})
+authRouter.get("/logout", AuthController.logoutUser)
+
 
 export default authRouter
