@@ -69,6 +69,7 @@ const logoutUser = async (req, res, next) => {
  */
 const verifyToken = async (req, res) => {
     const auth_token = req.cookies.auth_token;
+    console.log(req.cookies)
     if(!auth_token) {
         return res.status(401).send({status: "fail", message: "no auth_token"}).end()
     }
