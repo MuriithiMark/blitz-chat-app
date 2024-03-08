@@ -46,7 +46,7 @@ const getUserByUsername = async (username) => {
         return user
     } catch (error) {
         console.error(`[UserModel]`, error);
-        throw new Error("failed to create user")
+        throw new Error("failed to get user by username")
     }
 }
 
