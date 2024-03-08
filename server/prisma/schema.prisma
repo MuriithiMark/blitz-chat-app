@@ -19,11 +19,11 @@ model User {
   email                 String            @unique
   name                  String?
   hashedPassword        String
-  avatarUrl             String
+  avatarUrl             String?
   isVerified            Boolean           @default(false)
   isDeleted             Boolean           @default(false)
   createdAt             DateTime          @default(now())
-  updatedAt             DateTime
+  updatedAt             DateTime          @default(now())
   posts                 Post[]
   comments              Comment[]
   replies               Reply[]
