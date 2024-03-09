@@ -1,13 +1,13 @@
 import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
 
 import "./side-bar.scss";
-import { SERVER_URL } from "../../../utils/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllUsers } from "../../../services/api/users.api";
+import UserPreviewCard from "../../previews/user-preview-card/UserPreviewCard";
+import { useSelector } from "react-redux";
 
 const SideBar = ({ className }) => {
+  const currentUser = useSelector((state) => state.auth.user);
   const queryClient = useQueryClient();
   const { error, isLoading, data } = useQuery({
     queryKey: ["getUsers"],
@@ -16,17 +16,23 @@ const SideBar = ({ className }) => {
 
   return (
     <div className={className}>
-      {isLoading && <span>loading ...</span>}
-      {error && <span style={{ color: "red" }}>{error.message}</span>}
-      {data && data.status === "success" &&
-        data.users.map((user) => {
-          <div key={user.id}>
-            <p>{user.name}</p>
-            <button onClick={handleSendFriendRequest}>
-              Send Friend Request
-            </button>
-          </div>;
-        })}
+      {isLoading && <span className="loading">loading ...</span>}
+      {error && (
+        <span className="error" style={{ color: "red" }}>
+          {error.message}
+        </span>
+      )}
+      {data && data.status === "success" && (
+        <div className="data_container">
+          {data.users.map((user) => {
+            user.isCurrentUser = false;
+            if (user.id === currentUser.id) {
+              user.isCurrentUser = true;
+            }
+            return <UserPreviewCard key={user.id} user={user} />;
+          })}
+        </div>
+      )}
     </div>
   );
 };

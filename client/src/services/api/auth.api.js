@@ -7,16 +7,26 @@ const loginUser = async (loginData) => {
         console.log(LOGIN_URL)
         const response = await fetch(LOGIN_URL, {
             method: "post",
+            body: JSON.stringify(loginData),
             credentials: "include",
-            body: JSON.stringify(loginData)
+            headers: {
+                'Content-Type': 'application/json'
+            },
         })
         const data = await response.json();
         console.log(`Response Data `, data)
-        if(data.status === "fail") {
+        if (data.status === "fail") {
             throw new Error(JSON.stringify(data.errors));
         }
         return data;
-    }   catch (error) {
+    } catch (error) {
+        /**
+         * @type {string}
+         */
+        const message = error.message
+        if(!message.startsWith('{')) {
+            throw new Error(data.message)
+        }
         throw error
     }
 }
@@ -27,12 +37,15 @@ const registerUser = async (registerData) => {
         console.log(REGISTER_URL)
         const response = await fetch(REGISTER_URL, {
             method: "post",
+            body: JSON.stringify(registerData),
             credentials: "include",
-            body: JSON.stringify(registerData)
+            headers: {
+                'Content-Type': 'application/json'
+            },
         })
         const data = await response.json();
         console.log('Response Data: ', data)
-        if(data.status === "fail") {
+        if (data.status === "fail") {
             throw new Error(data.errors)
         }
         return data;
@@ -49,12 +62,12 @@ const logoutUser = async () => {
             credentials: "include"
         })
         const data = await response.json();
-        if(data.status === "fail") {
+        if (data.status === "fail") {
             throw new Error(data.message);
         }
         return data
     } catch (error) {
-        
+
     }
 }
 

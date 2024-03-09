@@ -1,13 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { loginUser } from "../../services/api/auth.api";
 import { useDispatch } from "react-redux";
 import { onLogin } from "../../features/auth/auth.slice";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({});
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const queryClient = useQueryClient();
 
@@ -72,6 +75,7 @@ const LoginForm = () => {
       <button type="button" onClick={handleSubmit}>
         Login
       </button>
+      <span>Don't have an account? <Link to="/auth/sign-up">Sign Up</Link></span>
     </form>
   );
 };

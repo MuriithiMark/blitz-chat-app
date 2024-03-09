@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { registerUser } from "../../services/api/auth.api";
 import { useNavigate } from "react-router-dom";
@@ -91,6 +92,8 @@ const SignUpForm = () => {
       <button type="button" onClick={handleSubmit}>
         Sign Up
       </button>
+      <span>Already have an account? <Link to="/auth/login">Login</Link></span>
+
     </form>
   );
 };
