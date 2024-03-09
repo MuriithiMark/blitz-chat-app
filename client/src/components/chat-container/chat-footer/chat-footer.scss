@@ -1,0 +1,68 @@
+.chat-input:focus, .chat-input:focus-visible, .chat-input:focus-within {
+    outline: none;
+    appearance: none;
+    border: none;
+}
+
+.chat-input {
+    width: calc(100% - 3em);
+    height: 90%;
+    margin: .5em;
+    padding: .4em;
+
+    border: .1em solid rgb(212, 211, 211);
+    border-radius: .4em;
+
+    background-color: white;
+}
+
+ .chat-input:focus, .chat-input:focus-visible, .chat-input:focus-within {
+ border: .1em solid black;
+}
+
+.send-btn {
+    width: 3.0em;
+    height: 3.0em;
+    margin: 0.4em;
+    padding: 0.25em;
+
+    border: .1em solid purple;
+    border-radius: 20%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.send-btn:hover {
+    --hover-color: rgba(90, 2, 90, 0.8);
+    border-color: var(--hover-color);
+    padding-right: .5em;
+    animation: send-btn-padding-right-space .2s ease-in;
+
+    .send-fill-icon {
+        animation: icon-rotate .8s ease-in;
+        transform: rotate(45deg);
+    }
+}
+
+@keyframes icon-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(45deg);
+    }
+}
+
+@keyframes send-btn-padding-right-space {
+    from {
+        padding-right: 0;
+    }
+
+    to {
+        padding-right: .5em;
+    }
+}

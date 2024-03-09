@@ -1,0 +1,34 @@
+.chat-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    border: .1em solid gray;
+    border-radius: 0.5em;
+}
+
+.chat-header {
+    width: 100%;
+    height: 3em;
+    padding: .2em;
+
+    border-bottom: .1px solid black;
+}
+
+.chat-content {
+    width: 100%;
+    height: calc(100% - 8em);
+    margin: .5em;
+}
+
+.chat-footer {
+    width: 100%;
+    height: 4em;
+    padding: .2em;
+    border-top: .1em solid black;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
