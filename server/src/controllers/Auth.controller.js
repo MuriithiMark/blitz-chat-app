@@ -50,7 +50,7 @@ const loginUser = async (req, res, next) => {
         }
 
         const auth_token = await generateToken(foundUser);
-        res.cookie("auth_token", auth_token, { expires: 60 * 60 * 1000 });
+        res.cookie("auth_token", auth_token, { expiresIn: 60 * 60 * 1000 });
         req.session.user = foundUser;
         res.status(200).send({ status: "success", user: foundUser }).end()
 

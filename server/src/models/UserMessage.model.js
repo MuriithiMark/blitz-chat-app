@@ -1,6 +1,8 @@
+import { socket } from "../../../client/src/services/socket/index.js"
 import prisma from "../prisma.js"
 
 const create = async (newMessage) => {
+    console.log('New Message ', newMessage)
     try {
         const message = await prisma.userMessage.create({
             data: newMessage

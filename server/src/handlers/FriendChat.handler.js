@@ -16,33 +16,45 @@ const onDeleteMessage = async () => { }
  * @param {Socket} socket 
  */
 const FriendChatHandler = async (socket) => {
-    console.log('Friends Connected!')
-
-    socket.on("new", async (friendShipId, newMessage) => {
+    console.log('Chat Socket Connected')
+    socket.on("new", async ({ to, newMessage }) => {
+        newMessage.senderId = socket.user.id;
+        newMessage.recipientId = to;
         try {
             const message = await UserMessageModel.create(newMessage);
-            socket.emit("notify-friend__new-message", friendShipId, { status: "success", message });
+            socket.to(to).emit("new", {
+                from: socket.user.id,
+                data: { status: "success", message }
+            })
         } catch (error) {
-            socket.emit("notify-friend__new", friendShipId, { status: "fail", message: error.message })
+            socket.to(to).emit("new", {
+                from: socket.user.id,
+                data: { status: "fail", message: error.message }
+            })
         }
     })
 
-    socket.on("delete", async (friendShipId, messageId) => {
+    socket.on("delete", async ({ to, messageId }) => {
         try {
             const message = await UserMessageModel.deleteMessage(messageId);
-            socket.emit("notify-friend__delete", friendShipId, { status: "success", message: "message deleted" })
+            socket.to(to).emit("delete", {
+                from: socket.user.id,
+                data: { status: "success", id: message.id }
+            })
         } catch (error) {
-            socket.emit("notify-friend__delete", friendShipId, { status: "fail", message: error.message })
+            socket.to(to).emit("delete", {
+                from: socket.user.id,
+                data: { status: "fail", message: error.message }
+            })
         }
     })
 
-    socket.on("typing", async (friendShipId, friendId) => {
-        socket.emit("notify-friend__typing", friendShipId, friendId)
+    socket.on("typing", async ({ to }) => {
+        socket.to(to).emit("typing", {
+            from: socket.user.id,
+            data: { status: "success", message: "typing" }
+        })
     })
-
-
-
-
 }
 
 export default FriendChatHandler
