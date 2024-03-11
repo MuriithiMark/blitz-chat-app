@@ -35,16 +35,21 @@
 }
 
 
-.send-btn:hover {
+.send-btn:hover:not(:disabled) {
     --hover-color: rgba(90, 2, 90, 0.8);
     border-color: var(--hover-color);
     padding-right: .5em;
-    animation: send-btn-padding-right-space .2s ease-in;
+    animation: send-btn-padding-right-space .05s ease-in;
 
     .send-fill-icon {
-        animation: icon-rotate .8s ease-in;
+        animation: icon-rotate .05s ease-in;
         transform: rotate(45deg);
     }
+}
+
+.send-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 @keyframes icon-rotate {

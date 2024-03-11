@@ -2,24 +2,15 @@ import React from "react";
 import { useState } from "react";
 
 import "./chat-footer.scss";
-import RichTextInput from "../../input/RichTextInput";
 import SendFill from "../../icons/SendFill";
 
 const ChatFooter = ({ className }) => {
-  const [chatInput, setChatInput] = useState("<h1>Hello World</h1>");
+  const [chatInput, setChatInput] = useState("");
 
-  /**
-   *
-   * @param {string} content
-   */
-  const handleChange = (content) => {
-    setChatInput(content);
+  const handleChange = (event) => {
+    setChatInput(event.target.value);
   };
 
-  /**
-   * 
-   * @param {React.KeyboardEvent<HTMLDivElement>} event 
-   */
   const handleEnterKeyDown = (event) => {
     if(event.key === "Enter") {
        handleSendMessage() 
@@ -28,12 +19,13 @@ const ChatFooter = ({ className }) => {
 
   const handleSendMessage = () => {
     console.log('Content ', chatInput)
+    setChatInput("")
   }
 
   return (
     <div className={className} onKeyUp={handleEnterKeyDown}>
-      <RichTextInput className="chat-input" onChange={handleChange} />
-      <button className="send-btn" onClick={handleSendMessage}>
+      <input className="chat-input" onChange={handleChange} value={chatInput} />
+      <button className="send-btn" onClick={handleSendMessage} disabled={chatInput.length <= 0}>
         <SendFill className={"send-fill-icon"} width={28} height={28} color={"purple"} />
       </button>
     </div>

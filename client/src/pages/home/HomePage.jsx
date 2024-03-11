@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import "./home-page.scss";
 // import { chatSocket as socket } from "../../services/socket";
 import SideBar from "../../components/shared/side-bar/SideBar";
 import Header from "../../components/shared/header/Header";
 import ChatContainer from "../../components/chat-container/ChatContainer";
-
+import { createTab } from "../../features/tabs/tabs.slice";
 function HomePage() {
   // const [message, setMessage] = useState("");
   // const [messages, setMessages] = useState([]);
@@ -45,7 +46,7 @@ function HomePage() {
   //   });
 
   //   socket.on("notify-friend__typing", async (data) => {
-      
+
   //   })
   // }, []);
 
@@ -54,6 +55,29 @@ function HomePage() {
   //     socket.emit("typing");
   //   }
   // }, [message]);
+
+  useEffect(() => {
+    /**
+     * @type {{name: string, isActive: boolean}[]}
+     */
+    const tabs = [
+      {
+        name: "HomePageTabs/chat",
+        isActive: false,
+      },
+      {
+        name: "HomePageTabs/newsfeed",
+        isActive: true,
+      },
+    ];
+
+    tabs.forEach((tab) => {
+      console.log(tab);
+      dispatch(createTab(tab));
+    });
+  }, []);
+
+  const dispatch = useDispatch();
 
   return (
     <div className="home-page">
