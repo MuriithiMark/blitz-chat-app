@@ -31,8 +31,6 @@ model User {
   commentReactions      CommentReaction[]
   groups                GroupMember[]
   notifications         Notification[]
-  friendshipInitiatorId FriendShip[]      @relation("FriendShipIntiator")
-  friendshipAcceptorId  FriendShip[]      @relation("FriendShipAcceptor")
 }
 
 model Post {
@@ -77,10 +75,8 @@ model FriendShip {
   hasAccepted Boolean       @default(false)
   isDeclined  Boolean       @default(false)
   createdAt   DateTime      @default(now())
-  acceptedOn  DateTime
+  acceptedOn  DateTime?
   messages    UserMessage[]
-  user        User          @relation("FriendShipIntiator", fields: [userId], references: [id])
-  friend      User          @relation("FriendShipAcceptor", fields: [friendId], references: [id])
 }
 
 // Reactions

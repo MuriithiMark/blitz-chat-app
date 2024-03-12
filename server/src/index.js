@@ -23,13 +23,23 @@ const SECRET_KEY = process.env.SECRET_KEY ?? "super-secret";
 const CORS_OPTIONS = {
     credentials: true,
     origin: "http://localhost:5173",
-    methods: "GET,POST,PUT,DELETE"
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: ["Content-Type", "Authorization", "Set-Cookie"]
 }
 
 app.use(cors(CORS_OPTIONS));
 app.use(express.json())
 app.use(cookieParser())
-app.use(session({ secret: SECRET_KEY }))
+app.use(session({
+    secret: SECRET_KEY,
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        httpOnly: true,
+        maxAge: 60 * 60 * 1000,
+        // domain: "http://localhost:5173"
+    }
+}))
 app.use(headerModifier)
 
 app.use("/auth", authRouter)
@@ -42,10 +52,12 @@ const notificationServer = io.of("/notification");
 
 io.engine.on("initial_headers", (headers, req) => {
     headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
+    headers["Access-Control-Allow-Credentials"] = true
 })
 
 io.engine.on("headers", (headers, req) => {
     headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Credentials"] = true
 })
 
 io.on("connection", async (socket) => {
@@ -53,24 +65,25 @@ io.on("connection", async (socket) => {
 })
 
 friendChatServer.use((socket, next) => {
-  const user = socket.handshake.auth.user;
-  if(!user) {
-    return next(new Error("invalid user"))
-  }
-  socket.user = user
-  next()
+    const user = socket.handshake.auth.user;
+    if (!user) {
+        return next(new Error("invalid user"))
+    }
+    socket.user = user
+    next()
 })
+
 friendChatServer.on("connection", FriendChatHandler);
 
 // Group Chat Server
 groupChatServer.use((socket, next) => {
     const group = socket.handshake.auth.group;
-    if(!group) {
-      return next(new Error("invalid group"))
+    if (!group) {
+        return next(new Error("invalid group"))
     }
     socket.group = group
     next()
-  })
+})
 groupChatServer.on("connection", GroupChatHandler)
 
 notificationServer.on("connection", NotificationHandler)

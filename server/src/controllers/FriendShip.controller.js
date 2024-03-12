@@ -9,10 +9,11 @@ const postFriendRequest = async (req, res, next) => {
         if (!friendId) {
             return res.status(400).send({ status: "fail", message: "invalid friend id" }).end()
         }
+        console.log(`req.session.user `, req.session.user);
+        console.log(`frienId `, friendId);
         const newFriendShip = {
             userId: req.session.user.id,
-            friendId,
-            acceptedOn: null,
+            friendId: friendId,
         }
         const friendShip = await FriendShipModel.create(newFriendShip);
         res.status(201).send({ status: "success", friendShip }).end()
