@@ -14,23 +14,52 @@ const SideBar = ({ className }) => {
     queryFn: getAllUsers,
   });
 
-  return (
-    <div className={className}>
-      {isLoading && <span className="loading">loading ...</span>}
-      {error && (
-        <span className="error" style={{ color: "red" }}>
+  if (error) {
+    return (
+      <div
+        className={className}
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <span
+          className="error"
+          style={{ color: "red", textTransform: "capitalize" }}
+        >
           {error.message}
         </span>
-      )}
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div
+        className={className}
+        style={{
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <span className="loading" style={{ textTransform: "capitalize" }}>
+          loading ...
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={className}>
       {data && data.status === "success" && (
         <div className="data_container">
-          {data.users.map((user) => {
-            user.isCurrentUser = false;
-            if (user.id === currentUser.id) {
-              user.isCurrentUser = true;
-            }
-            return <UserPreviewCard key={user.id} user={user} />;
-          })}
+          {data.users.map((user) => (
+            <UserPreviewCard key={user.id} user={user} />
+          ))}
         </div>
       )}
     </div>

@@ -20,6 +20,10 @@
         height: 100%;
         border: .1em solid black;
         border-radius: .5em;
+
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+        scrollbar-width: 0px;
     }
 
     .page-container {

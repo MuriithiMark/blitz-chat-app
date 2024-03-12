@@ -16,21 +16,31 @@ const onDeleteMessage = async () => { }
  * @param {Socket} socket 
  */
 const FriendChatHandler = async (socket) => {
-    console.log('Chat Socket Connected')
-    socket.on("new", async ({ to, newMessage }) => {
-        newMessage.senderId = socket.user.id;
-        newMessage.recipientId = to;
+    socket.on("new", async ({ to, friendShipId, newMessage }) => {
+        console.log('New Message from ', socket.id, ' to ', to);
+        const messageData = {
+            ...newMessage,
+            senderId: socket.user.id,
+            recipientId: to,
+            friendShip: {
+                connect: {
+                    id: friendShipId
+                }
+            }
+        }
         try {
-            const message = await UserMessageModel.create(newMessage);
+            const message = await UserMessageModel.create(messageData);
             socket.to(to).emit("new", {
                 from: socket.user.id,
                 data: { status: "success", message }
             })
         } catch (error) {
-            socket.to(to).emit("new", {
-                from: socket.user.id,
-                data: { status: "fail", message: error.message }
-            })
+            socket.emit("new",
+                {
+                    from: socket.user.id,
+                    data: { status: "fail", message: error.message }
+                }
+            )
         }
     })
 

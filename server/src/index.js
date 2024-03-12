@@ -12,7 +12,6 @@ import headerModifier from "./middle-wares/header-modifier.js"
 import FriendChatHandler from "./handlers/FriendChat.handler.js";
 import GroupChatHandler from "./handlers/GroupChat.handler.js";
 import NotificationHandler from "./handlers/Notification.handler.js";
-import { socket } from "../../client/src/services/socket/index.js";
 import friendShipRouter from "./routes/friendship-router.js";
 
 
@@ -69,7 +68,8 @@ friendChatServer.use((socket, next) => {
     if (!user) {
         return next(new Error("invalid user"))
     }
-    socket.user = user
+    socket.id = user.id;
+    socket.user = user;
     next()
 })
 

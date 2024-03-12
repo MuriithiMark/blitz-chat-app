@@ -9,7 +9,10 @@ import { onLogin } from "../../features/auth/auth.slice";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const queryClient = useQueryClient();

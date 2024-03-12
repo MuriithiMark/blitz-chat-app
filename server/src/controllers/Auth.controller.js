@@ -79,12 +79,13 @@ const logoutUser = async (req, res, next) => {
  */
 const verifyToken = async (req, res) => {
     const auth_token = req.cookies.auth_token;
+    console.log('Auth Token Verification: ', auth_token)
     if (!auth_token) {
         return res.status(401).send({ status: "fail", message: "no auth_token" }).end()
     }
     try {
-        await verifyJWT_Token(auth_token);
-        res.status(200).send({ status: "success", message: "authorized" }).end()
+        const user = await verifyJWT_Token(auth_token);
+        res.status(200).send({ status: "success", user }).end()
     } catch (error) {
         res.status(401).send({ status: "fail", message: error.message }).end()
     }

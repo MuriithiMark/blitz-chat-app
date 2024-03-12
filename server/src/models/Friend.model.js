@@ -8,27 +8,62 @@ const create = async (newFriendShip) => {
         return friendShip;
     } catch (error) {
         console.error(error)
-        throw new Error("failed to create friendship")
+        throw error
+    }
+}
+
+const update = async (friendShipId, updateData) => {
+    try {
+        const friendShip = await prisma.friendShip.update({
+            where: {
+                id: friendShipId
+            },
+            data: updateData
+        })
+        return friendShip
+    } catch (error) {
+        console.error(error)
+        throw error
     }
 }
 
 const getFriendShipByTheirIds = async (userId, friendId) => {
     try {
-        const friendShip = await prisma.friendShip.findUnique({
+        console.log(userId, friendId)
+        if (userId === friendId) {
+
+        }
+        const friendShips = await prisma.friendShip.findMany({
             where: {
-                userId: userId,
-                friendId: friendId
+                OR: [
+                    {
+                        AND: [
+                            { userId: userId },
+                            { friendId: friendId }
+                        ],
+                    },
+                    {
+                        AND: [
+                            { userId: friendId },
+                            { friendId: userId }
+                        ]
+                    }
+                ]
             }
         })
-        return friendShip;
+        if (friendShips.length === 0) {
+            throw new Error("not found")
+        }
+        return friendShips[0];
     } catch (error) {
         console.error(error)
-        throw new Error("no such friend ship")
+        throw error
     }
 }
 
 const FriendShipModel = {
     create,
+    update,
     getFriendShipByTheirIds
 }
 

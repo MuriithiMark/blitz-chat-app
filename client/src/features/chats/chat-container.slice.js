@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 /**
- * messages -> array of messages
- * data -> can be a user object or group object
- * context -> chatting with a friend or group
+ * @type { {  messages: any[], data: any, context: string } }
  */
 const initialChatState = {
     messages: [],
@@ -16,7 +14,6 @@ const chatContainerSlice = createSlice({
     initialState: initialChatState,
     reducers: {
         onChatSelect: (state, action) => {
-            console.log(`onChatSelect `, action.payload)
             return {
                 ...state,
                 ...action.payload
@@ -34,9 +31,15 @@ const chatContainerSlice = createSlice({
                 ...state,
                 messages: action.payload
             }
+        },
+        onNewMessage: (state, action) => {
+            return {
+                ...state,
+                messages: [...state.messages, action.payload]
+            }
         }
     }
 })
 
-export const { onChatLeave, onChatSelect, onFetchMessages} = chatContainerSlice.actions;
+export const { onChatLeave, onChatSelect, onFetchMessages, onNewMessage } = chatContainerSlice.actions;
 export default chatContainerSlice.reducer
