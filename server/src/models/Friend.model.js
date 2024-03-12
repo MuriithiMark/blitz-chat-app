@@ -14,12 +14,13 @@ const create = async (newFriendShip) => {
 
 const update = async (friendShipId, updateData) => {
     try {
+        console.log(updateData)
         const friendShip = await prisma.friendShip.update({
             where: {
                 id: friendShipId
             },
             data: updateData
-        })
+        });
         return friendShip
     } catch (error) {
         console.error(error)
@@ -29,10 +30,6 @@ const update = async (friendShipId, updateData) => {
 
 const getFriendShipByTheirIds = async (userId, friendId) => {
     try {
-        console.log(userId, friendId)
-        if (userId === friendId) {
-
-        }
         const friendShips = await prisma.friendShip.findMany({
             where: {
                 OR: [
@@ -51,8 +48,8 @@ const getFriendShipByTheirIds = async (userId, friendId) => {
                 ]
             }
         })
-        if (friendShips.length === 0) {
-            throw new Error("not found")
+        if(friendShips.length === 0) {
+            return null;
         }
         return friendShips[0];
     } catch (error) {
