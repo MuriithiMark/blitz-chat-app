@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -31,8 +27,9 @@ const FriendShipStatusAction = ({
     mutationKey: ["send_friend_request"],
     mutationFn: async () => sendFriendRequest(user.id),
     onSuccess: () => {
-      // FIXME invalidate queries
-      queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
+      queryClient.invalidateQueries({
+        queryKey: [`get_friendship_by_id_${user.id}`],
+      });
     },
     onError: (err) => {
       if (err.message === "unauthorized") {
@@ -45,7 +42,9 @@ const FriendShipStatusAction = ({
     mutationKey: ["accept_friend_request"],
     mutationFn: async () => acceptFriendRequest(friendShip.id),
     onSuccess: () => {
-      queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
+      queryClient.invalidateQueries({
+        queryKey: [`get_friendship_by_id_${user.id}`],
+      });
     },
   });
 
@@ -53,7 +52,9 @@ const FriendShipStatusAction = ({
     mutationKey: ["decline_friend_request"],
     mutationFn: async () => declineFriendRequest(friendShip.id),
     onSuccess: () => {
-      queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
+      queryClient.invalidateQueries({
+        queryKey: [`get_friendship_by_id_${user.id}`],
+      });
     },
   });
 
