@@ -9,8 +9,7 @@ const groupSocket = io(`${SERVER_URL}/group`, { autoConnect: false});
 const notificationSocket = io(`${SERVER_URL}/notification`)
 
 socket.io.on("error", (error) => {
-    // console.error(`[Socket Error] `, error);
-    // dispatch action to notify of errors
+    console.error(`[Socket Error] `, error);
     return;
 })
 
@@ -28,6 +27,10 @@ notificationSocket.onAny((event, ...args) => {
 
 chatSocket.on("new", (response) => {
     console.log(response)
+})
+
+chatSocket.on("connect", () => {
+    console.log('Client connected ')
 })
 
 export {

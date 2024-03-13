@@ -56,7 +56,7 @@ const SideBar = ({ className }) => {
   return (
     <div className={className}>
       {data && data.status === "success" && (
-        <div className="data_container">
+        <div className="data-container">
           {data.users.map((user) => (
             <UserPreviewCard key={user.id} user={user} />
           ))}

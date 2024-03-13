@@ -119,6 +119,8 @@ const UserPreviewCard = ({ user }) => {
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
   const currentUser = useSelector((state) => state.auth.user);
+  // user been chat with
+  const selectedUser = useSelector((state) => state.chatContainer.data);
 
   const dispatch = useDispatch();
 
@@ -158,7 +160,12 @@ const UserPreviewCard = ({ user }) => {
   }, [data, error, isLoading]);
 
   return (
-    <div className="user-preview-card" onClick={handlePreviewClick}>
+    <div
+      className={`user-preview-card ${
+        selectedUser && selectedUser.id === user.id ? "selected" : ""
+      }`}
+      onClick={handlePreviewClick}
+    >
       <img
         src={user.avatarUrl}
         alt={`${isCurrentUser ? "Your" : user.username + "'s"} avatar`}
