@@ -57,6 +57,7 @@ const acceptFriendRequest = async (friendShipId) => {
 const declineFriendRequest = async (friendShipId) => {
     try {
         const DECLINE_REQUEST_URL = `${FRIENDS_URL}/decline/${friendShipId}`;
+        console.log(`decline request url `, DECLINE_REQUEST_URL)
         const response = await fetch(DECLINE_REQUEST_URL, {
             credentials: "include"
         });

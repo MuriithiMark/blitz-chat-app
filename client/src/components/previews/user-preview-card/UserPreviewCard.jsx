@@ -22,16 +22,16 @@ const queryClient = new QueryClient();
 const FriendShipStatusAction = ({
   isCurrentUser,
   currentUser,
-  friendId,
+  user,
   friendShip,
 }) => {
   const navigate = useNavigate();
 
   const send = useMutation({
     mutationKey: ["send_friend_request"],
-    mutationFn: async () => sendFriendRequest(friendId),
+    mutationFn: async () => sendFriendRequest(user.id),
     onSuccess: () => {
-      console.log("Send Friend Request");
+      // FIXME invalidate queries
       queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
     },
     onError: (err) => {
@@ -45,7 +45,6 @@ const FriendShipStatusAction = ({
     mutationKey: ["accept_friend_request"],
     mutationFn: async () => acceptFriendRequest(friendShip.id),
     onSuccess: () => {
-      console.log("Friend Request Accepted");
       queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
     },
   });
@@ -54,7 +53,6 @@ const FriendShipStatusAction = ({
     mutationKey: ["decline_friend_request"],
     mutationFn: async () => declineFriendRequest(friendShip.id),
     onSuccess: () => {
-      console.log("Friend Request Declined");
       queryClient.invalidateQueries([`get_friendship_by_id_${user.id}`]);
     },
   });
@@ -173,7 +171,7 @@ const UserPreviewCard = ({ user }) => {
             isCurrentUser={isCurrentUser}
             currentUser={currentUser}
             friendShip={friendShip}
-            friendId={user.id}
+            user={user}
           />
         ) : (
           <span>Loading...</span>
