@@ -8,8 +8,11 @@ const getMessagesWithContext = async ({ context, id }) => {
         const CONTEXT_URL = context === "group" ? "group/messages" : "users/messages";
         const MESSAGES_URL = `${SERVER_URL}/${CONTEXT_URL}/${id}`;
 
-        const response = await fetch(MESSAGES_URL);
+        const response = await fetch(MESSAGES_URL, {
+            credentials: "include"
+        });
         const data = await response.json();
+        console.log(data)
         if (data.status === "fail") {
             throw new Error(data.message)
         }

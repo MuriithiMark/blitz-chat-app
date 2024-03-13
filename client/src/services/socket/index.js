@@ -8,7 +8,7 @@ const chatSocket = io(`${SERVER_URL}/friend`, { autoConnect: false});
 const groupSocket = io(`${SERVER_URL}/group`, { autoConnect: false});
 const notificationSocket = io(`${SERVER_URL}/notification`)
 
-socket.io.on("error", (error) => {
+socket.on("error", (error) => {
     console.error(`[Socket Error] `, error);
     return;
 })

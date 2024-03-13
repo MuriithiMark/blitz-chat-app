@@ -1,10 +1,37 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+
 import { chatSocket } from "../../../services/socket";
 import { onNewMessage } from "../../../features/chats/chat-container.slice";
+import { getMessagesWithContext } from "../../../services/api/messages.api";
 
 const ChatContent = ({ className }) => {
-  const messages = useSelector((state) => state.chatContainer.messages);
+  const chatContainer = useSelector((state) => state.chatContainer);
+
+  const { error, isLoading, data } = useQuery({
+    queryKey: [`get_messages_${chatContainer.data.friendShipId}`],
+    queryFn: () =>
+      getMessagesWithContext({
+        context: chatContainer.context,
+        id:
+          chatContainer.content === "group"
+            ? chatContainer.data.id
+            : chatContainer.data.friendShipId,
+      }),
+  });
+
+  if (isLoading) {
+    return <div className={className}>Loading ....</div>;
+  }
+
+  if (error) {
+    return (
+      <div className={className}>
+        <span style={{ color: "red" }}>{error.message}</span>
+      </div>
+    );
+  }
 
   useEffect(() => {}, []);
 
@@ -19,7 +46,7 @@ const ChatContent = ({ className }) => {
 
   return (
     <div className={className}>
-      {messages.map((message) => {
+      {chatContainer.messages.map((message) => {
         return (
           <div key={message.id}>
             <span>{message.content}</span>
