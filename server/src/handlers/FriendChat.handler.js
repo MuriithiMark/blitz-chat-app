@@ -16,8 +16,12 @@ const onDeleteMessage = async () => { }
  * @param {Socket} socket 
  */
 const FriendChatHandler = async (socket) => {
+
+    socket.on("disconnect", () => {
+        console.log('User ', socket.user.username, ' disconnected')
+    });
+
     socket.on("new", async ({ to, friendShipId, newMessage }) => {
-        console.log('New Message from ', socket.id, ' to ', to);
         const messageData = {
             ...newMessage,
             senderId: socket.user.id,
@@ -30,17 +34,19 @@ const FriendChatHandler = async (socket) => {
         }
         try {
             const message = await UserMessageModel.create(messageData);
+            // Send to both that a new message was created
+            // TODO Preferrably check that friend is online, if not online send notification instead
             socket.to(to).emit("new", {
                 from: socket.user.id,
                 data: { status: "success", message }
+            });
+            socket.emit("new/created", {
+                data: { status: 'success', message }
             })
         } catch (error) {
-            socket.emit("new",
-                {
-                    from: socket.user.id,
-                    data: { status: "fail", message: error.message }
-                }
-            )
+            socket.emit("new/error", {
+                data: { status: 'fail', message: error.message }
+            });
         }
     })
 

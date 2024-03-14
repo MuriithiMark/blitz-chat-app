@@ -39,12 +39,12 @@ model Post {
   id        String         @id @default(uuid())
   title     String
   content   String
-  userId    String
+  authorId    String
   createdAt DateTime       @default(now())
   updatedAt DateTime
   comment   Comment[]
   reactions PostReaction[]
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 // Comments are done on posts
@@ -125,6 +125,7 @@ model GroupMember {
 
 model GroupMessage {
   id        String   @id @default(uuid())
+  fromId    String
   groupId   String
   content   String
   createdAt DateTime @default(now())

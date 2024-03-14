@@ -51,10 +51,9 @@ const loginUser = async (req, res, next) => {
 
         const auth_token = await generateToken(foundUser);
         res.cookie("auth_token", auth_token, { expiresIn: 60 * 60 * 1000 });
-        console.log(`Found User: `, foundUser)
-        // req.session.user = foundUser;
+        req.session.user = foundUser;
+        console.log('Login: ', req.session.user)
         res.status(200).send({ status: "success", user: foundUser }).end()
-
     } catch (error) {
         res.status(500).send({ status: "fail", message: error.message }).end()
     }
@@ -67,6 +66,7 @@ const loginUser = async (req, res, next) => {
 const logoutUser = async (req, res, next) => {
     try {
         res.clearCookie("auth_token")
+        // TODO use session.destroy, or save session
         req.session.user = null;
         res.status(200).send({ status: "success", message: "user logged out" }).end()
     } catch (error) {

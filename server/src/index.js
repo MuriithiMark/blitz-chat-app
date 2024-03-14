@@ -13,6 +13,7 @@ import FriendChatHandler from "./handlers/FriendChat.handler.js";
 import GroupChatHandler from "./handlers/GroupChat.handler.js";
 import NotificationHandler from "./handlers/Notification.handler.js";
 import friendShipRouter from "./routes/friendship-router.js";
+import userMessageRouter from "./routes/user-message.router.js";
 
 
 dotenv.config()
@@ -32,7 +33,7 @@ app.use(cookieParser())
 app.use(session({
     secret: SECRET_KEY,
     saveUninitialized: false,
-    resave: false,
+    resave: true,
     cookie: {
         httpOnly: true,
         maxAge: 60 * 60 * 1000,
@@ -41,9 +42,10 @@ app.use(session({
 }))
 app.use(headerModifier)
 
-app.use("/auth", authRouter)
-app.use("/users", protectedRoute, usersRouter)
+app.use("/auth", authRouter);
+app.use("/users", protectedRoute, usersRouter);
 app.use("/users/friendship", protectedRoute, friendShipRouter);
+app.use("/users/messages", protectedRoute, userMessageRouter);
 
 const friendChatServer = io.of("/friend")
 const groupChatServer = io.of("/group")

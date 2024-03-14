@@ -74,6 +74,7 @@ const getFriendShipById = async (req, res, next) => {
         }
         res.status(200).send({ status: "success", friendShip }).end()
     } catch (error) {
+        console.log(error)
         res.status(500).send({ status: "fail", message: error.message }).end();
     }
 }

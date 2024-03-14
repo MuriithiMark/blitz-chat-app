@@ -39,7 +39,7 @@ const getMessageById = async (messageId) => {
     }
 }
 
-const getMessagesBetweenFriends = async (friendShipId) => {
+const getMessagesByFriendShip = async (friendShipId) => {
     try {
         // TODO add a rate limit, first retrieve last few messages
         const messages = await prisma.userMessage.findMany({
@@ -76,7 +76,7 @@ const UserMessageModel = {
     create,
     edit,
     getMessageById,
-    getMessagesBetweenFriends,
+    getMessagesByFriendShip,
     deleteMessage,
 }
 
