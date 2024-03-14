@@ -62,13 +62,17 @@ const ChatContent = ({ className }) => {
       }
 
       dispatch(onNewMessage(data.message));
+      setTimeout(() => {
+        console.log("Timeout over");
+        scrollRef.current.scrollIntoView({ behaviour: "smooth" });
+      }, 10);
     });
 
     chatSocket.on("new/created", ({ data: { message } }) => {
       dispatch(onNewMessage(message));
       // When user creates a message scroll them to bottom
       setTimeout(() => {
-        console.log('Timeout over')
+        console.log("Timeout over");
         scrollRef.current.scrollIntoView({ behaviour: "smooth" });
       }, 10);
       console.log("Comes into view");
