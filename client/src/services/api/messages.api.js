@@ -12,13 +12,12 @@ const getMessagesWithContext = async ({ context, id }) => {
             credentials: "include"
         });
         const data = await response.json();
-        console.log(data)
         if (data.status === "fail") {
             throw new Error(data.message)
         }
         return data;
     } catch (error) {
-        console.error(`[Get Messages With Context] `, error);
+        console.error(error);
         throw error
     }
 }

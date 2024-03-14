@@ -3,8 +3,9 @@ import { useState } from "react";
 
 import "./chat-footer.scss";
 import SendFill from "../../icons/SendFill";
-import { chatSocket, groupSocket } from "../../../services/socket";
+import { chatSocket } from "../../../services/socket";
 import { useSelector } from "react-redux";
+
 
 const ChatFooter = ({ className }) => {
   const context = useSelector((state) => state.chatContainer.context);
@@ -27,7 +28,7 @@ const ChatFooter = ({ className }) => {
       content: chatInput,
     };
 
-    if (context === "user") {
+    if (context === "user") {  
       chatSocket.emit("new", {
         to: contextData.id,
         friendShipId: contextData.friendShipId,

@@ -7,7 +7,7 @@ const getAllUsers = async () => {
             credentials: "include"
         })
         const data = await response.json();
-        console.log('Sidebar ', data)
+        console.log(data)
         if (data.status === "fail") {
             throw new Error(data.message);
         }

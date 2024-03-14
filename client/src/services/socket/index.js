@@ -25,12 +25,12 @@ notificationSocket.onAny((event, ...args) => {
     console.log(event, args)
 })
 
-chatSocket.on("new", (response) => {
-    console.log(response)
-})
-
 chatSocket.on("connect", () => {
     console.log('Client connected ')
+})
+
+chatSocket.on("disconnect", () => {
+    console.log('Client disconnected')
 })
 
 export {

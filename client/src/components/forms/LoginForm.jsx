@@ -15,7 +15,6 @@ const LoginForm = () => {
   });
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationKey: ["login_user"],
@@ -27,8 +26,8 @@ const LoginForm = () => {
         navigate("/")
     },
     onError: (error) => {
-
         const errors = JSON.parse(error.message.errors);
+        // TODO handle login errors
         console.error('Login Form Errors ', errors);
     }
   })

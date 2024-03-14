@@ -24,7 +24,21 @@
 .chat-content {
     width: 100%;
     height: calc(100% - 8em);
-    margin: .5em;
+    padding: .5em;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    gap: .8em;
+}
+
+.chat-content {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.chat-content::-webkit-scrollbar {
+    scrollbar-width: none;
+    display: none;  /* Safari and Chrome */
 }
 
 .chat-footer {

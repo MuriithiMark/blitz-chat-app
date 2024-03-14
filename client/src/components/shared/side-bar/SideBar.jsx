@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import "./side-bar.scss";
 import { getAllUsers } from "../../../services/api/users.api";
 import UserPreviewCard from "../../previews/user-preview-card/UserPreviewCard";
+import useAuthorizationCheck from "../../../hooks/use-authorization-check";
 
 const SideBar = ({ className }) => {
   const { error, isLoading, data } = useQuery({
-    queryKey: ["getUsers"],
+    queryKey: ["get_all_users"],
     queryFn: getAllUsers,
   });
+
+  useAuthorizationCheck(error);
 
   if (error) {
     return (
@@ -24,7 +27,12 @@ const SideBar = ({ className }) => {
       >
         <span
           className="error"
-          style={{ color: "red", textTransform: "capitalize" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            color: "red",
+            textTransform: "capitalize",
+          }}
         >
           {error.message}
         </span>
@@ -43,7 +51,14 @@ const SideBar = ({ className }) => {
           alignItems: "center",
         }}
       >
-        <span className="loading" style={{ textTransform: "capitalize" }}>
+        <span
+          className="loading"
+          style={{
+            width: "100%",
+            height: "100%",
+            textTransform: "capitalize",
+          }}
+        >
           loading ...
         </span>
       </div>

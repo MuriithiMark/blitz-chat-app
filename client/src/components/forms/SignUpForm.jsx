@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 
 const SignUpForm = () => {
   const [formData, setFormData] = useState({});
-  const queryClient = useQueryClient();
   const navigate = useNavigate()
 
   const mutation = useMutation({
@@ -19,6 +18,7 @@ const SignUpForm = () => {
       navigate("/auth/login")
     },
     onError: (error) => {
+      // TODO handle errors
       console.log(error)
     },
   })

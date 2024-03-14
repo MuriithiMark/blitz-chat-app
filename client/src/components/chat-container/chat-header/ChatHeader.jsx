@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import "./chat-header.scss";
@@ -7,13 +7,21 @@ import ThreeDotFill from "../../icons/ThreeDotFill";
 const ChatHeader = ({ className }) => {
   const data = useSelector((state) => state.chatContainer.data);
   const currentUser = useSelector((state) => state.auth.user);
+  const [displayName, setDisplayName] = useState(data.id);
 
   const handleChatSettings = () => {
     console.log("Settings Clicked ", data);
   };
 
-  const chatDisplayName =
-    data.id === currentUser.id ? "You" : !data.name ? data.username : data.name;
+  useEffect(() => {
+    const chatDisplayName =
+      data.id === currentUser.id
+        ? "You"
+        : !data.name
+        ? data.username
+        : data.name;
+    setDisplayName(chatDisplayName);
+  }, [data, currentUser]);
 
   return (
     <div className={className}>
@@ -23,7 +31,7 @@ const ChatHeader = ({ className }) => {
         alt={`${data.username} avatar`}
       />
       <div className="chat-details">
-        <span className="name">{chatDisplayName}</span>
+        <span className="name">{displayName}</span>
         <span className="last-seen">Last Seen 5 days ago</span>
       </div>
       <div className="chat-settings">

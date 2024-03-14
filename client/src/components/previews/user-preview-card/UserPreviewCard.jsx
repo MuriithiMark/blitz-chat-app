@@ -6,12 +6,16 @@ import { useNavigate } from "react-router-dom";
 import "./user-preview-card.scss";
 import {
   sendFriendRequest,
-  getFriendShipById,
+  getFriendShipByFriendId,
   declineFriendRequest,
   acceptFriendRequest,
 } from "../../../services/api/friends.api";
-import { onChatSelect } from "../../../features/chats/chat-container.slice";
+import {
+  onChatLeave,
+  onChatSelect,
+} from "../../../features/chats/chat-container.slice";
 import PersonFillAdd from "../../icons/PersonFillAdd";
+import useAuthorizationCheck from "../../../hooks/use-authorization-check";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +32,7 @@ const FriendShipStatusAction = ({
     mutationFn: async () => sendFriendRequest(user.id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_id_${user.id}`],
+        queryKey: [`get_friendship_by_friend_id`, user.id],
       });
     },
     onError: (err) => {
@@ -43,7 +47,7 @@ const FriendShipStatusAction = ({
     mutationFn: async () => acceptFriendRequest(friendShip.id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_id_${user.id}`],
+        queryKey: [`get_friendship_by_friend_id`, user.id],
       });
     },
   });
@@ -53,7 +57,7 @@ const FriendShipStatusAction = ({
     mutationFn: async () => declineFriendRequest(friendShip.id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_id_${user.id}`],
+        queryKey: [`get_friendship_by_friend_id`, user.id],
       });
     },
   });
@@ -125,17 +129,20 @@ const UserPreviewCard = ({ user }) => {
   const dispatch = useDispatch();
 
   const { error, isLoading, data } = useQuery({
-    queryKey: [`get_friendship_by_id_${user.id}`],
+    queryKey: [`get_friendship_by_friend_id`, user.id],
     queryFn: async () => {
       if (isCurrentUser) {
         return { status: "fail" };
       }
-      return getFriendShipById(user.id);
+      return getFriendShipByFriendId(user.id);
     },
   });
 
+  useAuthorizationCheck(error);
+
   const handlePreviewClick = () => {
-    // return navigate(`/chat/user/${user.id}`)
+    // clear chat container
+    dispatch(onChatLeave());
     dispatch(
       onChatSelect({
         context: "user",

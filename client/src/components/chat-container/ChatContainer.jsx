@@ -6,7 +6,7 @@ import ChatFooter from "./chat-footer/ChatFooter";
 import ChatContent from "./chat-content/ChatContent";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { groupSocket } from "../../services/socket";
+import { chatSocket, groupSocket } from "../../services/socket";
 
 const ChatContainer = () => {
   const context = useSelector((state) => state.chatContainer.context);
@@ -16,16 +16,24 @@ const ChatContainer = () => {
     if (context !== "group") {
       return;
     }
+
     const connectToGroupSocket = async () => {
       groupSocket.auth = { group: contextData };
-      groupSocket.connect()
+      groupSocket.connect();
     };
 
     connectToGroupSocket();
 
-    return () => {
-      groupSocket.close();
-    }
+    const disconnectToSockets = async () => {
+      if (context === "group") {
+        groupSocket.close();
+      }
+      if (context === "user") {
+        chatSocket.close();
+      }
+    };
+
+    return disconnectToSockets;
   }, []);
 
   return (
@@ -37,7 +45,7 @@ const ChatContainer = () => {
           <ChatFooter className="chat-footer" />
         </>
       ) : (
-        <span>Choose a friend to message!</span>
+        <span className="none-selected">Choose a friend or group to message!</span>
       )}
     </div>
   );

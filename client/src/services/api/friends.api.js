@@ -22,7 +22,7 @@ const sendFriendRequest = async (friendId) => {
 }
 
 
-const getFriendShipById  = async (friendId) => {
+const getFriendShipByFriendId  = async (friendId) => {
     try {
         const GET_FRIEND_URL = `${FRIENDS_URL}/${friendId}`;
         const response = await fetch(GET_FRIEND_URL,{
@@ -74,7 +74,7 @@ const declineFriendRequest = async (friendShipId) => {
 
 export {
     sendFriendRequest,
-    getFriendShipById,
+    getFriendShipByFriendId,
     acceptFriendRequest,
     declineFriendRequest
 }
