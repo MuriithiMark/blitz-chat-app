@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,6 +13,10 @@ import MessageCard from "../../messages/MessageCard";
 
 const ChatContent = ({ className }) => {
   const dispatch = useDispatch();
+  /**
+   * @type {React.Ref<HTMLDivElement>}
+   */
+  const scrollRef = useRef();
   const [isListenerConnected, setIsListenerConnected] = useState(false);
 
   const currentUser = useSelector((state) => state.auth.user);
@@ -62,6 +66,12 @@ const ChatContent = ({ className }) => {
 
     chatSocket.on("new/created", ({ data: { message } }) => {
       dispatch(onNewMessage(message));
+      // When user creates a message scroll them to bottom
+      setTimeout(() => {
+        console.log('Timeout over')
+        scrollRef.current.scrollIntoView({ behaviour: "smooth" });
+      }, 10);
+      console.log("Comes into view");
     });
 
     chatSocket.on("new/error", ({ data: { message } }) => {
@@ -96,6 +106,7 @@ const ChatContent = ({ className }) => {
           />
         );
       })}
+      <div className="allow-scroll-to-bottom" ref={scrollRef} />
     </div>
   );
 };

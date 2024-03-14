@@ -11,9 +11,7 @@ import HomePage from "./pages/home/HomePage";
 import store from "./features/store";
 import LoginPage from "./pages/auth/LoginPage";
 import SignUpPage from "./pages/auth/SignUpPage";
-import ChatContainer from "./components/chat-container/ChatContainer";
 import NewsFeed from "./pages/newsfeed/NewsFeed";
-import { chatLoader } from "./pages/chat/ChatContainer";
 
 const queryClient = new QueryClient();
 
@@ -27,16 +25,16 @@ const router = createBrowserRouter([
         path: "/",
         element: <HomePage />,
         children: [
-          {
-            path: "chat/:context",
-            children: [
-              {
-                path: ":id",
-                loader: chatLoader,
-                element: <ChatContainer />
-              }
-            ]
-          },
+          // {
+          //   path: "chat/:context",
+          //   children: [
+          //     {
+          //       path: ":id",
+          //       loader: chatLoader,
+          //       element: <ChatContainer />
+          //     }
+          //   ]
+          // },
           {
             path: "newsfeed/:id",
             element: <NewsFeed />
