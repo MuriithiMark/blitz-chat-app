@@ -14,6 +14,7 @@ import GroupChatHandler from "./handlers/GroupChat.handler.js";
 import NotificationHandler from "./handlers/Notification.handler.js";
 import friendShipRouter from "./routes/friendship-router.js";
 import userMessageRouter from "./routes/user-message.router.js";
+import groupRouter from "./routes/group-router.js";
 
 
 dotenv.config()
@@ -46,6 +47,7 @@ app.use("/auth", authRouter);
 app.use("/users", protectedRoute, usersRouter);
 app.use("/users/friendship", protectedRoute, friendShipRouter);
 app.use("/users/messages", protectedRoute, userMessageRouter);
+app.use("/groups", protectedRoute, groupRouter);
 
 const friendChatServer = io.of("/friend")
 const groupChatServer = io.of("/group")
@@ -83,9 +85,11 @@ groupChatServer.use((socket, next) => {
     if (!group) {
         return next(new Error("invalid group"))
     }
+    socket.id = group.id;
     socket.group = group
     next()
-})
+});
+
 groupChatServer.on("connection", GroupChatHandler)
 
 notificationServer.on("connection", NotificationHandler)
