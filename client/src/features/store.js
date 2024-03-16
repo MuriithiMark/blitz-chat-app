@@ -15,9 +15,8 @@ const store = configureStore({
         tabs: tabsReducer,
         chatContainer: chatContainerReducer,
     },
-    middleware: (getDefaultMiddleware) => {
-        getDefaultMiddleware().concat(Api.middleware)
-    }
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(Api.middleware),
 })
 
 setupListeners(store.dispatch)

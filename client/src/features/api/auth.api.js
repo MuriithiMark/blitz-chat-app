@@ -10,8 +10,8 @@ export const loginUser = (builder) => builder
             method: "POST",
             body: loginData
         }),
-        transformResponse: (response) => response.data,
-        transformErrorResponse: (response) => response.data
+        transformResponse: (response) => response.user,
+        transformErrorResponse: (response) => response.data,
     })
 
 
@@ -25,6 +25,6 @@ export const registerUser = (builder) => builder
             method: "POST",
             body: registerData,
         }),
-        transformResponse: (response) => response.data,
+        transformResponse: (response) => response,
         transformErrorResponse: (response) => response.data,
     })

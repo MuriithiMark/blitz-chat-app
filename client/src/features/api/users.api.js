@@ -5,7 +5,7 @@
 export const getAllUsers = (builder) => builder
     .query({
         query: () => '/users',
-        transformResponse: (response, meta, args) => response.data.users,
+        transformResponse: (response, meta, args) => response.users,
         transformErrorResponse: (response, meta, args) => response.data.message,
         providesTags: (result) => {
             return (
@@ -23,7 +23,7 @@ export const getAllUsers = (builder) => builder
 export const getUserById = (builder) => builder
     .query({
         query: (userId) => `/users/${userId}`,
-        transformResponse: (response) => response.data.user,
+        transformResponse: (response) => response.user,
         transformErrorResponse: (response) => response.data.message,
         providesTags: (result) => result ? [{ type: "Users", id: result.id }] : [{ type: "Users", id: "LIST" }]
     })
