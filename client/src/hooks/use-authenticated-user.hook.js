@@ -29,6 +29,7 @@ const useAuthenticatedUser = () => {
         if (data.status === 'fail') {
             return navigate("/auth/login");
         }
+        console.log('Verify Token', data)
         dispatch(onLogin(data.user))
         connectToChatSocket()
     }

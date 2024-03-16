@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery } from "@tanstack/react-query";
 
 import { chatSocket } from "../../../services/socket";
 import {
@@ -10,6 +10,8 @@ import {
 } from "../../../features/chats/chat-container.slice";
 import { getMessagesWithContext } from "../../../services/api/messages.api";
 import MessageCard from "../../messages/MessageCard";
+
+const queryClient = new QueryClient();
 
 const ChatContent = ({ className }) => {
   const dispatch = useDispatch();
@@ -83,6 +85,12 @@ const ChatContent = ({ className }) => {
       // TODO handle message create error
     });
   }, [data]);
+
+  useEffect(() => {
+    console.log('Rerun')
+    // queryClient.invalidateQueries({ queryKey: ["get_messages_with_context"]});
+    queryClient.refetchQueries({ queryKey: ["get_messages_with_context"]})
+  }, [context_data.id])
 
   if (isLoading) {
     return <div className={className}>Loading ....</div>;

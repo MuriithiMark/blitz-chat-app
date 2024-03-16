@@ -14,15 +14,53 @@
         border-radius: .6em;
     }
 
-    .bio {
-        display: flex;
-        flex-direction: column;
-        margin: .4em;
 
-        .username {
-            font-weight: 600;
+}
+
+.bio {
+    display: flex;
+    flex-direction: column;
+    margin: .4em;
+
+    .username {
+        font-weight: 600;
+
+        .user-details {
+            display: none;
         }
     }
+}
+
+.bio {
+    .username:hover {
+        text-decoration: underline;
+        cursor: pointer;
+
+        .user-details {
+            display: flex;
+
+        }
+    }
+}
+
+
+.user-details {
+    display: none;
+    position: absolute;
+    // right: 2em;
+    // margin-left: 2em;
+    // top: 4em;
+    width: 20em;
+    height: 12em;
+    border: .1em solid gray;
+    border-radius: 1em;
+    background-color: azure;
+
+    padding: 1em;
+}
+
+.user-details:hover{
+    display: flex;
 }
 
 .selected {

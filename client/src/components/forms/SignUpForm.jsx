@@ -5,43 +5,31 @@ import { Link } from "react-router-dom";
 
 import { registerUser } from "../../services/api/auth.api";
 import { useNavigate } from "react-router-dom";
+import useFormState from "../../hooks/use-form-state";
 
 const SignUpForm = () => {
-  const [formData, setFormData] = useState({});
-  const navigate = useNavigate()
-
-  const mutation = useMutation({
-    mutationKey: ["register_user"],
-    mutationFn: registerUser,
-    onSuccess: () => {
-      // navigate user to login page
-      navigate("/auth/login")
-    },
-    onError: (error) => {
-      // TODO handle errors
-      console.log(error)
-    },
-  })
-
-  /**
-   * @param {React.ChangeEvent<HTMLInputElement>} event
-   */
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => {
-      return {
-        ...prevData,
-        [name]: value,
-      };
-    });
-  };
+  const [formData, handleChange] = useFormState({
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: ""
+  });
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    console.log(formData);
-    // validate client schema
-    // delete the confirmPassword
-    delete formData.confirmPassword;
-    mutation.mutate(formData)
+    registerUser(formData)
+      .then((data) => {
+        if (data.status === "fail") {
+          // TODO handle failure
+          return;
+        }
+        dispatch(onLogin(data.user));
+        return navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+        return;
+      });
   };
 
   return (
@@ -92,8 +80,9 @@ const SignUpForm = () => {
       <button type="button" onClick={handleSubmit}>
         Sign Up
       </button>
-      <span>Already have an account? <Link to="/auth/login">Login</Link></span>
-
+      <span>
+        Already have an account? <Link to="/auth/login">Login</Link>
+      </span>
     </form>
   );
 };

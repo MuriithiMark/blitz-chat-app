@@ -1,7 +1,7 @@
 import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./user-preview-card.scss";
 import {
@@ -14,109 +14,11 @@ import {
   onChatLeave,
   onChatSelect,
 } from "../../../features/chats/chat-container.slice";
-import PersonFillAdd from "../../icons/PersonFillAdd";
 import useAuthorizationCheck from "../../../hooks/use-authorization-check";
+import FriendShipStatusAction from "../../actions/friendship-status/FriendShipStatusAction";
+import FullUserDetailsPreview from "../full-user-details/FullUserDetailsPreview";
 
 const queryClient = new QueryClient();
-
-const FriendShipStatusAction = ({
-  isCurrentUser,
-  currentUser,
-  user,
-  friendShip,
-}) => {
-  const navigate = useNavigate();
-
-  const send = useMutation({
-    mutationKey: ["send_friend_request"],
-    mutationFn: async () => sendFriendRequest(user.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_friend_id`, user.id],
-      });
-    },
-    onError: (err) => {
-      if (err.message === "unauthorized") {
-        return navigate("/auth/login");
-      }
-    },
-  });
-
-  const accept = useMutation({
-    mutationKey: ["accept_friend_request"],
-    mutationFn: async () => acceptFriendRequest(friendShip.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_friend_id`, user.id],
-      });
-    },
-  });
-
-  const decline = useMutation({
-    mutationKey: ["decline_friend_request"],
-    mutationFn: async () => declineFriendRequest(friendShip.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`get_friendship_by_friend_id`, user.id],
-      });
-    },
-  });
-
-  const handleFriendRequest = (event) => {
-    event.stopPropagation();
-    send.mutate();
-  };
-
-  const handleAcceptFriendRequest = (event) => {
-    event.stopPropagation();
-    accept.mutate();
-  };
-
-  const handleDeclineFriendRequest = (event) => {
-    event.stopPropagation();
-    decline.mutate();
-  };
-
-  // Logged In cannot be his own friend
-  if (isCurrentUser) {
-    return <></>;
-  }
-
-  // No such friendship, button to add friendship
-  if (!friendShip) {
-    return (
-      <button onClick={handleFriendRequest}>
-        <PersonFillAdd width={24} height={24} color={"purple"} />
-      </button>
-    );
-  }
-
-  // Friendship was accepted
-  if (friendShip.hasAccepted) {
-    return <span style={{ color: "green" }}>Accepted</span>;
-  }
-
-  // Friendship was declined
-  if (friendShip.isDeclined) {
-    return <span style={{ color: "red" }}>Blocked</span>;
-  }
-
-  // Logged In user initiated the friendship, but is pending
-  if (friendShip.userId === currentUser.id) {
-    return <span style={{ color: "orange" }}>Waiting</span>;
-  }
-
-  // Current User has not accepted or declined a friend request
-  return (
-    <div
-      className="friend-request-actions"
-      style={{ display: "flex", margin: "8px", gap: "10px" }}
-    >
-      <button onClick={handleAcceptFriendRequest}>Accept</button>
-      <button onClick={handleDeclineFriendRequest}>Decline</button>
-    </div>
-  );
-};
 
 const UserPreviewCard = ({ user }) => {
   const [friendShip, setFriendShip] = useState();
@@ -167,32 +69,36 @@ const UserPreviewCard = ({ user }) => {
   }, [data, error, isLoading]);
 
   return (
-    <div
-      className={`user-preview-card ${
-        selectedUser && selectedUser.id === user.id ? "selected" : ""
-      }`}
-      onClick={handlePreviewClick}
-    >
-      <img
-        src={user.avatarUrl}
-        alt={`${isCurrentUser ? "Your" : user.username + "'s"} avatar`}
-      />
-      <div className="bio">
-        <span className="username">
-          {isCurrentUser ? "You" : user.username}
-        </span>
-        {!isLoading ? (
-          <FriendShipStatusAction
-            isCurrentUser={isCurrentUser}
-            currentUser={currentUser}
-            friendShip={friendShip}
-            user={user}
-          />
-        ) : (
-          <span>Loading...</span>
-        )}
+    !isCurrentUser && (
+      <div
+        className={`user-preview-card ${
+          selectedUser && selectedUser.id === user.id ? "selected" : ""
+        }`}
+        onClick={handlePreviewClick}
+      >
+        <img
+          src={user.avatarUrl}
+          alt={`${isCurrentUser ? "Your" : user.username + "'s"} avatar`}
+        />
+        <div className="bio">
+          <Link to={`/user/${user.username}`}>
+            <span className="username">
+              {isCurrentUser ? "You" : user.username}
+            </span>
+          </Link>
+          {!isLoading ? (
+            <FriendShipStatusAction
+              isCurrentUser={isCurrentUser}
+              currentUser={currentUser}
+              friendShip={friendShip}
+              user={user}
+            />
+          ) : (
+            <span>Loading...</span>
+          )}
+        </div>
       </div>
-    </div>
+    )
   );
 };
 

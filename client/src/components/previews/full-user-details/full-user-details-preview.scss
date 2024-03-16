@@ -1,0 +1,28 @@
+.full-user-details-preview-bio {
+    display: flex;
+    flex-direction: column;
+    gap: .4em;
+    
+    .bio {
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+
+        .about {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+
+            .name {
+                font-size: large;
+                font-weight: 600;
+            }
+
+            .username{ 
+                font-size: small;
+                font-weight: 400;
+                font-style: italic;
+            }
+        }
+    }
+}

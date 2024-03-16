@@ -1,0 +1,55 @@
+
+.main {
+    width: calc(100% - 2em);
+    height: calc(100% - 6em);
+    margin: 1em;
+
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+
+    .side-bar {
+        height: 100%;
+        border: .1em solid black;
+        border-radius: .5em;
+
+        overflow-y: scroll;
+        scroll-behavior: smooth;
+        scrollbar-width: 0px;
+    }
+
+    .page-container {
+        height: 100%;
+    }
+}
+
+
+@media screen and (min-width: 768px) {
+    .side-bar {
+        width: 40%;
+    }
+
+    .page-container {
+        width: 60%;
+    }
+}
+
+
+@media screen and (min-width: 1200px) {
+    .side-bar {
+        width: 25%;
+    }
+
+    .page-container {
+        width: 80%;
+    }
+}
+
+.side-bar {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.side-bar::-webkit-scrollbar {
+    scrollbar-width: none;
+    display: none;  /* Safari and Chrome */
+}
