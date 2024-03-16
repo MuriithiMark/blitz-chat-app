@@ -3,9 +3,11 @@ import FriendShipController from "../controllers/FriendShip.controller.js";
 
 const friendShipRouter = Router()
 
-friendShipRouter.post("/:friendId", FriendShipController.postFriendRequest);
+friendShipRouter.get("/", FriendShipController.getUserFriends);
+friendShipRouter.post("/:friendId/new", FriendShipController.postFriendRequest);
 friendShipRouter.get("/:friendId", FriendShipController.getFriendShipById)
-friendShipRouter.get("/accept/:friendShipId", FriendShipController.acceptFriendRequest);
-friendShipRouter.get("/decline/:friendShipId", FriendShipController.declineFriendRequest);
+friendShipRouter.get("/:friendShipId/accept", FriendShipController.acceptFriendRequest);
+friendShipRouter.get("/:friendShipId/decline", FriendShipController.declineFriendRequest);
+friendShipRouter.get("/:friendShipId/messages", FriendShipController.getMessagesByFriendShipId)
 
 export default friendShipRouter;

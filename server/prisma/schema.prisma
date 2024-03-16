@@ -31,15 +31,15 @@ model User {
   commentReactions CommentReaction[]
   groups           GroupMember[]
   notifications    Notification[]
-  // friendShipFrom FriendShip[] @relation("From");
   friendShipTo     FriendShip[]      @relation("To")
+  FriendShipFrom   FriendShip[]      @relation("From")
 }
 
 model Post {
   id        String         @id @default(uuid())
   title     String
   content   String
-  authorId    String
+  authorId  String
   createdAt DateTime       @default(now())
   updatedAt DateTime
   comment   Comment[]
@@ -79,8 +79,8 @@ model FriendShip {
   createdAt   DateTime      @default(now())
   acceptedOn  DateTime?
   messages    UserMessage[]
-  // user User @relation("From", fields: [userId], references: [id]);
-  user        User          @relation("To", fields: [friendId], references: [id])
+  from        User          @relation("From", fields: [userId], references: [id])
+  to          User          @relation("To", fields: [friendId], references: [id])
 }
 
 // Reactions

@@ -19,9 +19,15 @@ const postFriendRequest = async (req, res, next) => {
 
         const newFriendShip = { userId, friendId }
         const friendShip = await FriendShipModel.create(newFriendShip);
-        res.status(201).send({ status: "success", friendShip }).end()
+        const friend = {
+            ...friendShip.to,
+            friendShipId: friendShip.id,
+            fromId: friendShip.userId,
+            toId: friendShip.friendId
+        }
+        res.status(201).send({ status: "success", friend }).end()
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.status(500).send({ status: "fail", message: error.message }).end();
     }
 }
@@ -36,7 +42,13 @@ const acceptFriendRequest = async (req, res, next) => {
             return res.status(400).send({ status: "fail", message: "invalid friend id" }).end()
         }
         const friendShip = await FriendShipModel.update(friendShipId, { hasAccepted: true, isDeclined: false });
-        res.status(200).send({ status: 'success', friendShip }).end()
+        const friend = {
+            ...friendShip.from,
+            friendShipId,
+            fromId: friendShip.userId,
+            toId: friendShip.friendId
+        }
+        res.status(200).send({ status: 'success', friend }).end()
     } catch (error) {
         res.status(500).send({ status: "fail", message: error.message }).end();
     }
@@ -52,9 +64,29 @@ const declineFriendRequest = async (req, res, next) => {
             return res.status(400).send({ status: "fail", message: "invalid friend id" }).end()
         }
         const friendShip = await FriendShipModel.update(friendShipId, { hasAccepted: false, isDeclined: true })
-        res.status(200).send({ status: 'success', friendShip }).end()
+        const friend = {
+            ...friendShip.from,
+            friendShipId,
+            fromId: friendShip.userId,
+            toId: friendShip.friendId
+        }
+        res.status(200).send({ status: 'success', friend }).end()
     } catch (error) {
         res.status(500).send({ status: "fail", message: error.message }).end();
+    }
+}
+
+/**
+ * @type {import("../type-definitions.d").ExpressFunction}
+ */
+const getUserFriends = async (req, res, next) => {
+    try {
+        const userId = req.session.user.id;
+        const friends = await FriendShipModel.getUserFriendsByUserId(userId);
+        res.status(200).send({ status: 'success', friends }).end();
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ status: 'fail', message: error.message }).end()
     }
 }
 
@@ -79,11 +111,33 @@ const getFriendShipById = async (req, res, next) => {
     }
 }
 
+/**
+ * @type { import("../type-definitions.d").ExpressFunction}
+ */
+const getMessagesByFriendShipId = async (req, res, next) => {
+    try {
+        const friendShipId = req.params.friendShipId;
+        if (!friendShipId) {
+            return res.status(400).send({ status: "fail", message: "no friendship id provided" }).end()
+        }
+        const messages = await FriendShipModel.getMessagesByFriendShipId(friendShipId);
+        res.status(200).send({ status: "success", messages }).end()
+    } catch (error) {
+        console.error(error)
+        if (error.message === "no such friendship") {
+            return res.status(404).send({ status: 'fail', message: error.message }).end()
+        }
+        res.status(500).send({ status: 'fail', message: error.message }).end()
+    }
+}
+
 const FriendShipController = {
     postFriendRequest,
     acceptFriendRequest,
     declineFriendRequest,
-    getFriendShipById
+    getFriendShipById,
+    getUserFriends,
+    getMessagesByFriendShipId
 }
 
 export default FriendShipController;

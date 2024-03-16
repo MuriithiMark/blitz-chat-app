@@ -45,9 +45,12 @@ app.use(headerModifier)
 
 app.use("/auth", authRouter);
 app.use("/users", protectedRoute, usersRouter);
-app.use("/users/friendship", protectedRoute, friendShipRouter);
+app.use("/users/friends", protectedRoute, friendShipRouter);
 app.use("/users/messages", protectedRoute, userMessageRouter);
 app.use("/groups", protectedRoute, groupRouter);
+app.all("*", (req, res, next) => {
+    res.status(404).send({status: "fail", message: "not found"}).end()
+})
 
 const friendChatServer = io.of("/friend")
 const groupChatServer = io.of("/group")
