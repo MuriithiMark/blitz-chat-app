@@ -43,7 +43,7 @@ export const logoutUser = (builder) => builder
         }),
         transformErrorResponse: (response) => response.data,
         providesTags: [{ type: "Auth", id: "logout" }],
-        invalidatesTags: ["Auth", "Users", "Messages"]
+        invalidatesTags: ["Auth", "Users", "Messages"],
     })
 
 /**
@@ -56,6 +56,8 @@ export const verifyToken = (builder) => builder
             url: '/auth/verify-token',
             method: "GET",
         }),
+        keepUnusedDataFor: 60 * 60, // token should be reverified after 1hr
+        transformResponse: (response) => response.user,
         providesTags: [{ type: "Auth", id: "verify-token" }],
         invalidatesTags: (response, error) => {
             if (error) {

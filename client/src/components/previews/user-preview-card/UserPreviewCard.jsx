@@ -17,10 +17,19 @@ import {
 import useAuthorizationCheck from "../../../hooks/use-authorization-check";
 import FriendShipStatusAction from "../../actions/friendship-status/FriendShipStatusAction";
 import FullUserDetailsPreview from "../full-user-details/FullUserDetailsPreview";
+import {
+  useGetUserFriendByIdQuery,
+  useGetUserFriendsQuery,
+} from "../../../features/api";
+import { useNavigation } from "react-router-dom";
+import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
+import { UserProfileIcon } from "../../../assets";
 
 const queryClient = new QueryClient();
 
-const UserPreviewCard = ({ user }) => {
+const UserPreviewCard = ({ friend }) => {
+  const [user, isLoading] = useAuthenticatedUser();
+  console.log("User ", user, " Friend ", friend);
   const [friendShip, setFriendShip] = useState();
   const [isCurrentUser, setIsCurrentUser] = useState(false);
 
@@ -30,54 +39,70 @@ const UserPreviewCard = ({ user }) => {
 
   const dispatch = useDispatch();
 
-  const { error, isLoading, data } = useQuery({
-    queryKey: [`get_friendship_by_friend_id`, user.id],
-    queryFn: async () => {
-      if (isCurrentUser) {
-        return { status: "fail" };
-      }
-      return getFriendShipByFriendId(user.id);
-    },
-  });
+  const navigate = useNavigate();
 
-  useAuthorizationCheck(error);
+  // const { error, isLoading, data } = useQuery({
+  //   queryKey: [`get_friendship_by_friend_id`, user.id],
+  //   queryFn: async () => {
+  //     if (isCurrentUser) {
+  //       return { status: "fail" };
+  //     }
+  //     return getFriendShipByFriendId(user.id);
+  //   },
+  // });
+
+  const {
+    data,
+    isLoading: isLoadingFriend,
+    isSuccess,
+    isError,
+  } = useGetUserFriendByIdQuery(friend && friend.id);
+
+  // useAuthorizationCheck(error);
 
   const handlePreviewClick = () => {
-    // clear chat container
-    dispatch(onChatLeave());
-    dispatch(
-      onChatSelect({
-        context: "user",
-        data: { ...user, friendShipId: friendShip ? friendShip.id : null },
-      })
-    );
+    if (!friend) return;
+    // // clear chat container
+    // dispatch(onChatLeave());
+    // dispatch(
+    //   onChatSelect({
+    //     context: "user",
+    //     data: { ...user, friendShipId: friendShip ? friendShip.id : null },
+    //   })
+    // );
+    return navigate(`/chat/friends/${friend.id}`);
   };
 
-  useEffect(() => {
-    if (!user || !currentUser) {
-      return;
-    }
-    setIsCurrentUser(currentUser.id === user.id);
-  }, [user, currentUser]);
+  // useEffect(() => {
+  //   if (!user || !currentUser) {
+  //     return;
+  //   }
+  //   setIsCurrentUser(currentUser.id === user.id);
+  // }, [user, currentUser]);
 
-  useEffect(() => {
-    if (error || isLoading) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (error || isLoading) {
+  //     return;
+  //   }
 
-    setFriendShip(data.friendShip);
-  }, [data, error, isLoading]);
+  //   setFriendShip(data.friendShip);
+  // }, [data, error, isLoading]);
+
+  if (isLoadingFriend) {
+    return <span>Loading ....</span>;
+  }
 
   return (
-    !isCurrentUser && (
+    friend &&
+    user.id === friend.id && (
       <div
         className={`user-preview-card ${
-          selectedUser && selectedUser.id === user.id ? "selected" : ""
+          selectedUser.id === user.id ? "selected" : ""
         }`}
         onClick={handlePreviewClick}
       >
         <img
-          src={user.avatarUrl}
+          src={user.avatarUrl ? user.avatarUrl : UserProfileIcon}
           alt={`${isCurrentUser ? "Your" : user.username + "'s"} avatar`}
         />
         <div className="bio">
@@ -94,7 +119,7 @@ const UserPreviewCard = ({ user }) => {
               user={user}
             />
           ) : (
-            <span>Loading...</span>
+            <span>No Friends Available</span>
           )}
         </div>
       </div>

@@ -7,8 +7,9 @@ import ChatContent from "./chat-content/ChatContent";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { chatSocket, groupSocket } from "../../services/socket";
+import ChatSideBar from "./chat-sidebar/ChatSidebar";
 
-const ChatContainer = () => {
+const ChatContainer = ({ friendId }) => {
   const context = useSelector((state) => state.chatContainer.context);
   const contextData = useSelector((state) => state.chatContainer.data);
 
@@ -38,15 +39,20 @@ const ChatContainer = () => {
 
   return (
     <div className="chat-container">
-      {context ? (
-        <>
-          <ChatHeader className="chat-header" />
-          <ChatContent className="chat-content" />
-          <ChatFooter className="chat-footer" />
-        </>
-      ) : (
-        <span className="none-selected">Choose a friend or group to message!</span>
-      )}
+      <div className="chat-main">
+        {context ? (
+          <>
+            <ChatHeader className="chat-header" />
+            <ChatContent className="chat-content" />
+            <ChatFooter className="chat-footer" />
+          </>
+        ) : (
+          <span className="none-selected">
+            Choose a friend or group to message!
+          </span>
+        )}
+      </div>
+      <ChatSideBar className="chat-sidebar" />
     </div>
   );
 };

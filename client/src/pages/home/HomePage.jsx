@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import "./home-page.scss";
 import ChatContainer from "../../components/chat-container/ChatContainer";
-import useAuthenticatedUser from "../../hooks/use-authenticated-user.hook";
+import useAuthenticatedUser from "../../hooks/use-authenticated-user.hook_old";
 
 function HomePage() {
 

@@ -2,11 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
-import useFormState from "../../../hooks/use-form-state";
+import useFormState from "../../../hooks/useFormState.hook";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { useRegisterUserMutation } from "../../../features/api";
+import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 
 const SignUpForm = () => {
+  useAuthenticatedUser();
+  
   const [formData, handleChange] = useFormState({
     email: "",
     username: "",

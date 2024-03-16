@@ -1,0 +1,12 @@
+.header-component {
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: .05em solid gainsboro;
+}
+
+.settings {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 20%;
+}

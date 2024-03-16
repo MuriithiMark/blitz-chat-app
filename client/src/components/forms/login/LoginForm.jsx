@@ -3,12 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./login-form.scss";
 import { useDispatch } from "react-redux";
-import useFormState from "../../../hooks/use-form-state";
+import useFormState from "../../../hooks/useFormState.hook";
 import { useLoginUserMutation } from "../../../features/api";
 import LoadingOverlay from "../../loading/LoadingOverlay";
 import { onLogin } from "../../../features/auth/auth.slice";
+import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 
 const LoginForm = () => {
+  useAuthenticatedUser();
+  
   const [formData, handleChange] = useFormState({
     username: "",
     password: "",

@@ -6,7 +6,7 @@ export const getAllUsers = (builder) => builder
     .query({
         query: () => '/users',
         transformResponse: (response, meta, args) => response.users,
-        transformErrorResponse: (response, meta, args) => response.data.message,
+        transformErrorResponse: (response, meta, args) => response,
         providesTags: (result) => {
             return (
                 result ? [
@@ -14,6 +14,9 @@ export const getAllUsers = (builder) => builder
                     { type: "Users", id: "LIST" }
                 ] : [{ type: "Users", id: "LIST" }]
             )
+        },
+        invalidatesTags: (response, error) => {
+            if (error.status === 401) return ["Auth"];
         }
     })
 

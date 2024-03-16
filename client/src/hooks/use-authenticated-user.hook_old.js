@@ -7,7 +7,11 @@ import { SERVER_URL } from "../utils/constants";
 import { useDispatch } from "react-redux";
 import { onLogin } from "../features/auth/auth.slice";
 
-const useAuthenticatedUser = () => {
+/**
+ * 
+ * @deprecated
+ */
+const useAuthenticatedUser_Old = () => {
     const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
     const user = useSelector((state) => state.auth.user);
 
@@ -46,4 +50,4 @@ const useAuthenticatedUser = () => {
     return;
 }
 
-export default useAuthenticatedUser;
+export default useAuthenticatedUser_Old;
