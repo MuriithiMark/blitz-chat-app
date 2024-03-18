@@ -5,13 +5,10 @@ import "./login-form.scss";
 import { useDispatch } from "react-redux";
 import useFormState from "../../../hooks/useFormState.hook";
 import { useLoginUserMutation } from "../../../features/api";
-import LoadingOverlay from "../../loading/LoadingOverlay";
 import { onLogin } from "../../../features/auth/auth.slice";
-import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 
 const LoginForm = () => {
-  useAuthenticatedUser({isAuthPage: true});
-  
+
   const [formData, handleChange] = useFormState({
     username: "",
     password: "",
@@ -23,13 +20,13 @@ const LoginForm = () => {
   const [loginUser, result] = useLoginUserMutation();
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     loginUser(formData)
       .unwrap()
       .then((data) => {
-        dispatch(onLogin(data))
-        result.reset()
-        console.log('fulfilled ', data)
+        dispatch(onLogin(data));
+        result.reset();
+        console.log("fulfilled ", data);
         return navigate("/");
       })
       .catch((error) => {
@@ -37,45 +34,38 @@ const LoginForm = () => {
       });
   };
 
-
   return (
-    <LoadingOverlay
-      isLoading={result.isLoading}
-      loadingComponent={<span>Loading ...</span>}
-      loadingStyles="loading-styles"
-    >
-      <form method="post" onSubmit={handleSubmit}>
-        <label>
-          Username
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="jane.doe"
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder=""
-          />
-        </label>
+    <form method="post" onSubmit={handleSubmit}>
+      <label>
+        Username
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="jane.doe"
+        />
+      </label>
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder=""
+        />
+      </label>
 
-        <br />
+      <br />
 
-        <button className="submit-btn" type="submit">
-          Login
-        </button>
-        <span>
-          Don't have an account? <Link to="/auth/sign-up">Sign Up</Link>
-        </span>
-      </form>
-    </LoadingOverlay>
+      <button className="submit-btn" type="submit">
+        Login
+      </button>
+      <span>
+        Don't have an account? <Link to="/auth/sign-up">Sign Up</Link>
+      </span>
+    </form>
   );
 };
 

@@ -4,7 +4,7 @@ import { SERVER_URL } from "../../utils/constants";
 import { loginUser, logoutUser, registerUser, verifyToken } from "./auth.api";
 import { getAllUsers, getUserById } from "./users.api";
 import { acceptFriendRequest, declineFriendRequest, getUserFriendById, getUserFriends, sendFriendRequest } from "./friends.api";
-import { getMessages, getMessageById } from "./messages.api";
+import { getMessagingContext, getMessages, getMessageById } from "./messages.api";
 
 
 // combines all apis
@@ -30,6 +30,8 @@ const Api = createApi({
         declineFriendRequest: declineFriendRequest(builder),
 
         // Messages
+        // Messaging Context -> friendShip/group
+        getMessagingContext: getMessagingContext(builder),
         getMessages: getMessages(builder),
         getMessageById: getMessageById(builder)
     })
@@ -50,6 +52,7 @@ export const {
     useAcceptFriendRequestMutation,
     useDeclineFriendRequestMutation,
 
+    useGetMessagingContextQuery,
     useGetMessagesQuery,
     useGetMessageByIdQuery
 } = Api;

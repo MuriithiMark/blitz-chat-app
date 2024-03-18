@@ -9,8 +9,11 @@ import {
   useSendFriendRequestMutation,
 } from "../../../features/api";
 import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
+import HourGlassIcon from "../../icons/HourGlassIcon";
+import CheckIcon from "../../icons/CheckIcon";
+import CancelXIcon from "../../icons/CancelXIcon";
 
-const FriendShipStatusAction = ({ user }) => {
+const FriendShipStatusAction = ({ className, user }) => {
   const [currentUser] = useAuthenticatedUser();
 
   const {
@@ -21,17 +24,6 @@ const FriendShipStatusAction = ({ user }) => {
     isError,
   } = useGetUserFriendByIdQuery(user.id);
 
-  console.log(
-    `Query results for `,
-    user.username,
-    " :",
-    friendShip,
-    error,
-    isLoading,
-    isSuccess,
-    isError
-  );
-
   // Logged In cannot be his own friend
   if (user.id === currentUser.id) {
     return <></>;
@@ -39,7 +31,11 @@ const FriendShipStatusAction = ({ user }) => {
 
   // No such friendship, button to add friendship
   if (!friendShip) {
-    return <SendFriendRequest friendId={user.id} />;
+    return (
+      <div className={className}>
+        <SendFriendRequest friendId={user.id} />;
+      </div>
+    );
   }
 
   // Friendship was accepted
@@ -53,11 +49,11 @@ const FriendShipStatusAction = ({ user }) => {
   }
 
   // Logged In user initiated the friendship, but is pending
-  if (friendShip.from.id === currentUser.id) {
+  if (friendShip.fromId === currentUser.id) {
     return (
-      <div style={{ display: "flex", gap: "10px" }}>
-        <span style={{ color: "orange" }}>Waiting</span>
-        <DeclineFriendRequest />
+      <div className={className} >
+        <HourGlassIcon width={20} height={20} color={"lightblue"} />
+        <DeclineFriendRequest friendId={user.id} />
       </div>
     );
   }
@@ -65,8 +61,7 @@ const FriendShipStatusAction = ({ user }) => {
   // Current User has not accepted or declined a friend request
   return (
     <div
-      className="friend-request-actions"
-      style={{ display: "flex", gap: "10px" }}
+      className={className}
     >
       <AcceptFriendRequest friendId={user.id} />
       <DeclineFriendRequest friendId={user.id} />
@@ -83,7 +78,7 @@ const SendFriendRequest = ({ friendId }) => {
 
   return (
     <button onClick={() => sendFriendRequest(friendId)}>
-      <PersonFillAdd width={24} height={24} color={"purple"} />
+      <PersonFillAdd width={20} height={20} color={"purple"} />
     </button>
   );
 };
@@ -98,7 +93,7 @@ const AcceptFriendRequest = ({ friendId }) => {
 
   return (
     <button onClick={() => acceptFriendRequest(friendId)}>
-      <span style={{ color: "green" }}>Accept</span>
+      <CheckIcon width={20} height={20} color={"green"} />
     </button>
   );
 };
@@ -113,7 +108,7 @@ const DeclineFriendRequest = ({ friendId }) => {
 
   return (
     <button onClick={() => declineFriendRequest(friendId)}>
-      <span style={{ color: "red" }}>Decline</span>
+      <CancelXIcon width={20} height={20} color={"orangered"} />
     </button>
   );
 };

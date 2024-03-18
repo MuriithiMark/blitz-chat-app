@@ -10,11 +10,11 @@ const ChatSideBar = ({ className }) => {
     data: friends,
     error,
     isLoading,
-    isSuccess,
     isError,
   } = useGetUserFriendsQuery();
 
   if (isError) {
+    console.error(error)
     return (
       <div className={`${className} error`} style={{ color: "red" }}>
         {error}

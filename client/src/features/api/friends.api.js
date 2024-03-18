@@ -12,6 +12,12 @@ export const getUserFriends = (builder) => builder
                 ...result.map(({ id }) => ({ type: "Friends", id })),
                 { type: "Friends", id: "LIST" }
             ] : [{ type: "Friends", id: "LIST" }]
+        },
+        invalidateTags: (result, error) => {
+            if (error.status === 401) {
+                return [{ type: "Auth", id: "verify-token" }]
+            }
+            return [{ type: "Friends" }]
         }
     })
 
@@ -20,14 +26,12 @@ export const getUserFriends = (builder) => builder
  */
 export const getUserFriendById = (builder) => builder
     .query({
-        query: (friendId) => `/friends/${friendId}`,
-        transformResponse: (response) => {
-            console.log(response)
-            return response.friendShip
-        },
-        transformErrorResponse: (response) => response.data,
-        providesTags: (result) => [{ type: "Friends", id: result.id }],
+        query: (friendId) => `/friends/users/${friendId}`,
+        transformResponse: (response) => response.friend,
+        transformErrorResponse: (response) => response.data.message,
+        providesTags: (result, error, friendId) => [{ type: "Friends", id: result.id }],
         invalidateTags: (result, error, friendId) => {
+            console.log('Result: ', result)
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
@@ -61,12 +65,12 @@ export const acceptFriendRequest = (builder) => builder
         query: (friendShipId) => `/friends/accept/${friendShipId}`,
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response,
-        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: friendShipId }],
+        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: result.id }],
         invalidateTags: (result, error, friendShipId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendShipId }]
+            return [{ type: "Friends", id: result.id }]
         }
     })
 
@@ -81,11 +85,11 @@ export const declineFriendRequest = (builder) => builder
         query: (friendShipId) => `/friends/decline/${friendShipId}`,
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response,
-        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: friendShipId }],
+        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: result.id }],
         invalidateTags: (result, error, friendShipId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendShipId }]
+            return [{ type: "Friends", id: result.id }]
         },
     })

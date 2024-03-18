@@ -60,13 +60,15 @@ export const verifyToken = (builder) => builder
         }),
         keepUnusedDataFor: 60 * 60, // token should be reverified after 1hr
         transformResponse: (response) => response.user,
+        transformErrorResponse: (response) => response.data.message,
         providesTags: [{ type: "Auth", id: "verify-token" }],
-        invalidatesTags: (response, error, isAuthPage) => {
+        invalidatesTags: (result, error, isAuthPage) => {
+            console.log(error)
             if(error && isAuthPage) {
                 return ["Users", "Messages", "Friends"]
             }
             if (error) {
-                return ["Auth", "Users", "Messages"]
+                return ["Auth", "Users", "Messages", "Friends"]
             }
         }
     })

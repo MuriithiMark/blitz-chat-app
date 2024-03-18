@@ -10,11 +10,13 @@ const AvatarImg = ({
   height,
   className,
   style,
+  alt,
+  extraQueryParams
 }) => {
   return (
     <img
-      src={src ? src : `https://ui-avatars.com/api/?name=${name ?? username}`}
-      alt={`${username}'s avatar`}
+      src={src ? src : `https://ui-avatars.com/api/?name=${name ? name : username}&${extraQueryParams ? extraQueryParams : ''}`}
+      alt={alt ?? `${username}'s avatar`}
       width={width}
       height={height}
       className={`avatar-img-component ${className}`}

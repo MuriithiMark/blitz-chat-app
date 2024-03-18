@@ -1,17 +1,16 @@
-import React, {  } from "react";
+import React from "react";
 
 import "./message-card.scss";
 
-const MessageCard = ({ context, message, currentUser, context_data }) => {
-
+const MessageCard = ({ message, context, currentUserId }) => {
   return (
     <div className="container">
       <div
         className={`message-holder ${
-          currentUser.id === message.senderId ? "right" : "left"
+          currentUserId === message.senderId ? "right" : "left"
         }`}
       >
-        {context === "group" && (
+        {context === "groups" && (
           <div className="message-header">
             <span>{message.senderId}</span>
           </div>

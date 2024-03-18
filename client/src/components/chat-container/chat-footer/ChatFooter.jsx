@@ -3,11 +3,15 @@ import { useState } from "react";
 
 import "./chat-footer.scss";
 import SendFill from "../../icons/SendFill";
-import { chatSocket } from "../../../services/socket";
-import { useSelector } from "react-redux";
+import useSocket from "../../../hooks/useSocket";
 
-const ChatFooter = ({ className, context, contentData, socket }) => {
+
+const ChatFooter = ({ className, context, contextData, currentUser }) => {
   const [chatInput, setChatInput] = useState("");
+  const socket = useSocket({
+    context,
+    authData: context === "groups" ? contextData : currentUser,
+  });
 
   const handleChange = (event) => {
     setChatInput(event.target.value);
@@ -23,15 +27,11 @@ const ChatFooter = ({ className, context, contentData, socket }) => {
     let newMessage = {
       content: chatInput,
     };
+    const to = context === "groups" ? contextData.id : contextData.friend.id
 
-    if (true /**handle group/friend */) {
-      console.error('Handle Sending Messages')
-      return
-    }
-
-    socket.emit(`${context}/messages/new`, {
-      to: contextData.id,
-      friendShipId: contextData.friendShipId,
+    socket.emit(`/messages/new`, {
+      to,
+      contextId: contextData.id,
       newMessage,
     });
 

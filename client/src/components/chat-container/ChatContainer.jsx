@@ -1,46 +1,80 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 import "./chat-container.scss";
 import ChatHeader from "./chat-header/ChatHeader";
 import ChatFooter from "./chat-footer/ChatFooter";
 import ChatContent from "./chat-content/ChatContent";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import { chatSocket, groupSocket } from "../../services/socket";
-import ChatSideBar from "./chat-sidebar/ChatSidebar";
-import SearchInput from "../search/search-input/SearchInput";
-import { useParams } from "react-router-dom";
-import { useGetMessagesQuery } from "../../features/api";
+import { useGetMessagingContextQuery } from "../../features/api";
+import useAuthenticatedUser from "../../hooks/useAuthenticatedUser.hook";
 
-const ChatContainer = ({ friendId }) => {
+const ChatContainer = () => {
+  const [currentUser, isCurrentUserLoading] = useAuthenticatedUser()
   const { context, contextId } = useParams();
 
-  const { messages, error, isLoading, isSuccess, isError } =
-    useGetMessagesQuery({
-      socket: context === "group" ? groupSocket : chatSocket,
-      context,
-    });
+  const {
+    data: contextData,
+    error,
+    isLoading,
+    isError,
+  } = useGetMessagingContextQuery({
+    context: context,
+    contextId: contextId,
+  });
+
+  if (isLoading) {
+    return (
+      <div
+        className="chat-container"
+        style={{ justifyContent: "center", alignItems: "center" }}
+      >
+        <span style={{ fontSize: "xxx-large", color: "green" }}>
+          Loading...
+        </span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    console.error(error);
+    return (
+      <div
+        className="chat-container"
+        style={{ justifyContent: "center", alignItems: "center" }}
+      >
+        <span
+          style={{
+            fontSize: "xxx-large",
+            color: "red",
+            textTransform: "capitalize",
+          }}
+        >
+          An Error was encountered
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-container">
-      {context ? (
-        <>
-          <ChatHeader className="chat-header" />
-          <ChatContent
-            className="chat-content"
-            context={context}
-            messages={messages}
-          />
-          <ChatFooter
-            className="chat-footer"
-            socket={context === "group" ? groupSocket : chatSocket}
-          />
-        </>
-      ) : (
-        <span className="none-selected">
-          Choose a friend or group to message!
-        </span>
-      )}
+      <ChatHeader
+        className="chat-header"
+        context={context}
+        contextId={contextData.id}
+        currentUser={currentUser}
+      />
+      <ChatContent
+        className="chat-content"
+        context={context}
+        contextData={contextData}
+        currentUser={currentUser}
+      />
+      <ChatFooter
+        className="chat-footer"
+        context={context}
+        contextData={contextData}
+        currentUser={currentUser}
+      />
     </div>
   );
 };
