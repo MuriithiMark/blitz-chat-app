@@ -95,16 +95,25 @@ const getUserFriends = async (req, res, next) => {
  * @type {import("../type-definitions.d").ExpressFunction}
  */
 const getFriendShipById = async (req, res, next) => {
-    console.log('Friend Id ')
     try {
         const friendShipId = req.params.friendShipId;
+        const userId = req.session.user.id;
         const friendShip = await FriendShipModel.getFriendShipById(friendShipId);
-        if(!friendShip) {
-            return res.status(404).send({status: 'fail', message: 'not found'}).end()
+        if (!friendShip) {
+            return res.status(404).send({ status: 'fail', message: 'friendship not found' }).end()
         }
-        res.status(200).send({status: 'success', friendShip}).end()
+        friendShip.fromId == friendShip.userId;
+        friendShip.toId = friendShip.friendId;
+        if (friendShip.userId === userId) {
+            friendShip.friend = friendShip.to
+        } else if (friendShip.friendId === userId) {
+            friendShip.friend = friendShip.from;
+        }
+        delete friendShip.from;
+        delete friendShip.to
+        res.status(200).send({ status: 'success', friendShip }).end()
     } catch (error) {
-        
+
         console.error(error);
         res.status(500).send({ status: 'fail', message: error.message }).end()
     }
@@ -122,9 +131,24 @@ const getFriendShipByFriendId = async (req, res, next) => {
         }
         const friendShip = await FriendShipModel.getFriendShipByTheirIds(userId, friendId);
         if (!friendShip) {
-            return res.status(404).send({ status: 'fail', message: 'not found' }).end()
+            return res.status(404).send({ status: 'fail', message: 'friendship not found' }).end()
         }
-        res.status(200).send({ status: "success", friendShip }).end()
+        const friend = (friendShip.userId === userId) ?
+            ({
+                ...friendShip.to,
+                friendShipId: friendShip.id,
+                fromId: friendShip.userId,
+                toId: friendShip.friendId,
+            })
+            :
+            ({
+                ...friendShip.from,
+                friendShipId: friendShip.id,
+                fromId: friendShip.userId,
+                toId: friendShip.friendId
+            })
+        console.log('FriendShip ', friend)
+        res.status(200).send({ status: "success", friend }).end()
     } catch (error) {
         console.log(error)
         res.status(500).send({ status: "fail", message: error.message }).end();
@@ -139,6 +163,7 @@ const getFriendShipByFriendId = async (req, res, next) => {
 const getMessagesByFriendShipId = async (req, res, next) => {
     try {
         const friendShipId = req.params.friendShipId;
+        console.log('Messages By FriendShipID ', friendShipId)
         if (!friendShipId) {
             return res.status(400).send({ status: "fail", message: "no friendship id provided" }).end()
         }

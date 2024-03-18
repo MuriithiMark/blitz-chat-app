@@ -44,6 +44,10 @@ const getFriendShipById = async (friendShipId) => {
         const friendShip = await prisma.friendShip.findUnique({
             where: {
                 id: friendShipId
+            },
+            include: {
+                from: true,
+                to: true
             }
         })
         return friendShip;
