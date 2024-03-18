@@ -35,6 +35,7 @@ const protectedRoute = async (req, res, next) => {
         if(!req.session.user) {
             console.log('Logged in but session erased!')
             req.session.user = foundUser;
+            console.log('Session ', req.session, ' req.url ', req.originalUrl)
         }
         next()
     } catch (error) {

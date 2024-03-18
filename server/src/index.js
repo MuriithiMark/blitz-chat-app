@@ -34,7 +34,7 @@ app.use(cookieParser())
 app.use(session({
     secret: SECRET_KEY,
     saveUninitialized: false,
-    resave: true,
+    resave: false,
     cookie: {
         httpOnly: true,
         maxAge: 60 * 60 * 1000,
@@ -45,7 +45,7 @@ app.use(headerModifier)
 
 app.use("/auth", authRouter);
 app.use("/users", protectedRoute, usersRouter);
-app.use("/users/friends", protectedRoute, friendShipRouter);
+app.use("/friends", protectedRoute, friendShipRouter);
 app.use("/users/messages", protectedRoute, userMessageRouter);
 app.use("/groups", protectedRoute, groupRouter);
 app.all("*", (req, res, next) => {

@@ -39,9 +39,23 @@ const update = async (friendShipId, updateData) => {
     }
 }
 
+const getFriendShipById = async (friendShipId) => {
+    try {
+        const friendShip = await prisma.friendShip.findUnique({
+            where: {
+                id: friendShipId
+            }
+        })
+        return friendShip;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
 const getFriendShipByTheirIds = async (userId, friendId) => {
     try {
-        const friendShips = await prisma.friendShip.findMany({
+        const friendShip = await prisma.friendShip.findFirst({
             where: {
                 OR: [
                     {
@@ -57,12 +71,14 @@ const getFriendShipByTheirIds = async (userId, friendId) => {
                         ]
                     }
                 ]
+            },
+            include: {
+                to: true,
+                from: true
             }
         })
-        if (friendShips.length === 0) {
-            return null;
-        }
-        return friendShips[0];
+        
+        return friendShip;
     } catch (error) {
         console.error(error)
         throw error
@@ -127,6 +143,7 @@ const getMessagesByFriendShipId = async (friendShipId) => {
 const FriendShipModel = {
     create,
     update,
+    getFriendShipById,
     getUserFriendsByUserId,
     getFriendShipByTheirIds,
     getMessagesByFriendShipId

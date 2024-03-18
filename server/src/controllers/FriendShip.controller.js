@@ -4,6 +4,7 @@ import FriendShipModel from "../models/Friend.model.js";
  * @type { import("../type-definitions.d").ExpressFunction}
  */
 const postFriendRequest = async (req, res, next) => {
+    console.log('Posting new Friend Request')
     try {
         const friendId = req.params.friendId;
         const userId = req.session.user.id
@@ -94,6 +95,25 @@ const getUserFriends = async (req, res, next) => {
  * @type {import("../type-definitions.d").ExpressFunction}
  */
 const getFriendShipById = async (req, res, next) => {
+    console.log('Friend Id ')
+    try {
+        const friendShipId = req.params.friendShipId;
+        const friendShip = await FriendShipModel.getFriendShipById(friendShipId);
+        if(!friendShip) {
+            return res.status(404).send({status: 'fail', message: 'not found'}).end()
+        }
+        res.status(200).send({status: 'success', friendShip}).end()
+    } catch (error) {
+        
+        console.error(error);
+        res.status(500).send({ status: 'fail', message: error.message }).end()
+    }
+}
+
+/**
+ * @type {import("../type-definitions.d").ExpressFunction}
+ */
+const getFriendShipByFriendId = async (req, res, next) => {
     try {
         const friendId = req.params.friendId;
         const userId = req.session.user.id;
@@ -110,6 +130,8 @@ const getFriendShipById = async (req, res, next) => {
         res.status(500).send({ status: "fail", message: error.message }).end();
     }
 }
+
+// const getFriendByFriendId = async (req, res, next) => {}
 
 /**
  * @type { import("../type-definitions.d").ExpressFunction}
@@ -137,7 +159,8 @@ const FriendShipController = {
     declineFriendRequest,
     getFriendShipById,
     getUserFriends,
-    getMessagesByFriendShipId
+    getMessagesByFriendShipId,
+    getFriendShipByFriendId
 }
 
 export default FriendShipController;
