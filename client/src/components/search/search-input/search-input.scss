@@ -1,0 +1,14 @@
+.search-input-container {
+    margin: .5em;
+    padding: .5em;
+    display: flex;
+    flex-direction: column
+}
+
+.search-input {
+    padding: .5em;
+    height: 3em;
+    font-size: large;
+
+    border-radius: .4em;
+}

@@ -10,7 +10,7 @@ import { onLogin } from "../../../features/auth/auth.slice";
 import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 
 const LoginForm = () => {
-  useAuthenticatedUser();
+  useAuthenticatedUser({isAuthPage: true});
   
   const [formData, handleChange] = useFormState({
     username: "",
@@ -22,12 +22,14 @@ const LoginForm = () => {
 
   const [loginUser, result] = useLoginUserMutation();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     loginUser(formData)
       .unwrap()
       .then((data) => {
         dispatch(onLogin(data))
         result.reset()
+        console.log('fulfilled ', data)
         return navigate("/");
       })
       .catch((error) => {
@@ -42,7 +44,7 @@ const LoginForm = () => {
       loadingComponent={<span>Loading ...</span>}
       loadingStyles="loading-styles"
     >
-      <form>
+      <form method="post" onSubmit={handleSubmit}>
         <label>
           Username
           <input
@@ -66,7 +68,7 @@ const LoginForm = () => {
 
         <br />
 
-        <button className="submit-btn" type="button" onClick={handleSubmit}>
+        <button className="submit-btn" type="submit">
           Login
         </button>
         <span>

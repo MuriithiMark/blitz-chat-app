@@ -4,7 +4,7 @@
  */
 export const getUserFriends = (builder) => builder
     .query({
-        query: () => `/users/friends`,
+        query: () => `/friends`,
         transformResponse: (response) => response.friends,
         transformErrorResponse: (response) => response.data.message,
         providesTags: (result) => {
@@ -20,15 +20,18 @@ export const getUserFriends = (builder) => builder
  */
 export const getUserFriendById = (builder) => builder
     .query({
-        query: (friendId) => `/users/friends/${friendId}`,
-        transformResponse: (response) => response.friend,
+        query: (friendId) => `/friends/${friendId}`,
+        transformResponse: (response) => {
+            console.log(response)
+            return response.friendShip
+        },
         transformErrorResponse: (response) => response.data,
-        providesTags: (result, error, friendId) => [{ type: "Friends", id: friendId }],
+        providesTags: (result) => [{ type: "Friends", id: result.id }],
         invalidateTags: (result, error, friendId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendId }]
+            return [{ type: "Friends", id: result.id }]
         },
     })
 
@@ -37,30 +40,33 @@ export const getUserFriendById = (builder) => builder
  */
 export const sendFriendRequest = (builder) => builder
     .mutation({
-        query: (friendId) => `/users/friends/${friendId}/new`,
+        query: (friendId) => ({
+            url: `/friends/new/${friendId}`,
+            method: "POST",
+        }),
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response,
-        providesTags: (result, error, friendId) => [{ type: "Friends", id: friendId }],
+        providesTags: (result, error, friendId) => [{ type: "Friends", id: result.id }],
         invalidateTags: (result, error, friendId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendId }]
+            return [{ type: "Friends", id: result.id }]
         },
     })
 
 
 export const acceptFriendRequest = (builder) => builder
     .mutation({
-        query: (friendId) => `/users/friends/${friendId}/accept`,
+        query: (friendShipId) => `/friends/accept/${friendShipId}`,
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response,
-        providesTags: (result, error, friendId) => [{ type: "Friends", id: friendId }],
-        invalidateTags: (result, error, friendId) => {
+        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: friendShipId }],
+        invalidateTags: (result, error, friendShipId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendId }]
+            return [{ type: "Friends", id: friendShipId }]
         }
     })
 
@@ -72,14 +78,14 @@ export const acceptFriendRequest = (builder) => builder
  */
 export const declineFriendRequest = (builder) => builder
     .mutation({
-        query: (friendId) => `/users/friends/${friendId}/decline`,
+        query: (friendShipId) => `/friends/decline/${friendShipId}`,
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response,
-        providesTags: (result, error, friendId) => [{ type: "Friends", id: friendId }],
-        invalidateTags: (result, error, friendId) => {
+        providesTags: (result, error, friendShipId) => [{ type: "Friends", id: friendShipId }],
+        invalidateTags: (result, error, friendShipId) => {
             if (error.status === 401) {
                 return [{ type: "Auth", id: "verify-token" }]
             }
-            return [{ type: "Friends", id: friendId }]
+            return [{ type: "Friends", id: friendShipId }]
         },
     })

@@ -3,18 +3,18 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import "./index.scss";
 import RootLayoutPage, { rootAction } from "./pages/layouts/RootLayoutPage";
-import HomePage from "./pages/home/HomePage";
 import store from "./features/store";
 import LoginPage from "./pages/auth/login/LoginPage";
 import SignUpPage from "./pages/auth/signup/SignUpPage";
 import NewsFeed from "./pages/newsfeed/NewsFeed";
-import HomeLayout from "./pages/layouts/HomeLayout";
 import ChatContainer from "./components/chat-container/ChatContainer";
 import Header from "./components/shared/header/Header";
+import ChatLayout from "./pages/chat/ChatLayout";
+import UsersPage from "./pages/users/UsersPage";
+import TestPage from "./pages/test/TestPage";
 
 const queryClient = new QueryClient();
 
@@ -26,13 +26,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <HomeLayout />,
+        element: <NewsFeed />,
         children: [
-          {
-            path: "chat",
-            element: <ChatContainer />,
-          },
-
           {
             path: "newsfeed/:id",
             element: <NewsFeed />,
@@ -40,7 +35,18 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/user",
+        path: "/chat",
+        element: <ChatLayout />,
+        children: [
+          {
+            path: ":context/:contextId",
+            element: <ChatContainer />,
+          },
+        ],
+      },
+      {
+        path: "/users",
+        element: <UsersPage />,
         children: [
           {
             path: ":id",
@@ -64,7 +70,10 @@ const router = createBrowserRouter([
       },
     ],
   },
-
+  {
+    path: "/test",
+    element: <TestPage />,
+  },
   {
     path: "*",
     element: (

@@ -6,15 +6,18 @@ import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 import { UserProfileIcon } from "../../../assets";
 import ProfileCard from "../../profile/profile-card/ProfileCard";
 import BellFill from "../../icons/BellFill";
+import { NavLink } from "react-router-dom";
+import AvatarImg from "../../profile/avatar-img/AvatarImg";
 
 const Header = ({ className }) => {
   const [user, isLoading] = useAuthenticatedUser();
   const [profileIsVisble, setProfileIsVisible] = useState(false);
+  const [notificationsIsVisible, setNotificationsIsVisible] = useState(false)
   const navigate = useNavigate();
 
   const handleProfileIconClick = async () => {
     console.log(data);
-    return navigate(`/users/${user.username}`);
+    // return navigate(`/users/${user.username}`);
   };
 
   const handleNotificationClick = async () => {
@@ -34,7 +37,10 @@ const Header = ({ className }) => {
       <span className="site-logo">
         <Link to="/">Home</Link>
       </span>
-      <nav></nav>
+      <nav>
+        <NavLink to="/chat">Chat</NavLink>
+        <NavLink to="/users">Users</NavLink>
+      </nav>
       <div className="settings">
         {isLoading || !user ? (
           <>
@@ -49,16 +55,19 @@ const Header = ({ className }) => {
             >
               <div className="notifications-bell-component">
                 <BellFill width={32} height={32} />
+                {notificationsIsVisible && <div></div>}
               </div>
             </button>
             <button onClick={handleProfileIconClick}>
-              <img
+              <AvatarImg
                 className="profile-icon"
-                src={user.avatarUrl ? user.avatarUrl : UserProfileIcon}
+                src={user.avatarUrl}
                 width={40}
                 height={40}
-                alt={`${user.username}'s avatar`}
+                name={user.name}
+                username={user.username}
               />
+              {profileIsVisble && <div></div>}
             </button>
             {profileIsVisble && <ProfileCard user={user} />}
           </>

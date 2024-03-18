@@ -6,11 +6,7 @@ import SendFill from "../../icons/SendFill";
 import { chatSocket } from "../../../services/socket";
 import { useSelector } from "react-redux";
 
-
-const ChatFooter = ({ className }) => {
-  const context = useSelector((state) => state.chatContainer.context);
-  const contextData = useSelector((state) => state.chatContainer.data);
-
+const ChatFooter = ({ className, context, contentData, socket }) => {
   const [chatInput, setChatInput] = useState("");
 
   const handleChange = (event) => {
@@ -24,21 +20,20 @@ const ChatFooter = ({ className }) => {
   };
 
   const handleSendMessage = () => {
-    const newMessage = {
+    let newMessage = {
       content: chatInput,
     };
 
-    if (context === "user") {  
-      chatSocket.emit("new", {
-        to: contextData.id,
-        friendShipId: contextData.friendShipId,
-        newMessage,
-      });
+    if (true /**handle group/friend */) {
+      console.error('Handle Sending Messages')
+      return
     }
 
-    if (context === "group") {
-      console.log("Group Context");
-    }
+    socket.emit(`${context}/messages/new`, {
+      to: contextData.id,
+      friendShipId: contextData.friendShipId,
+      newMessage,
+    });
 
     setChatInput("");
   };

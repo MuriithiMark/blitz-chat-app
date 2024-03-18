@@ -13,6 +13,7 @@ export const loginUser = (builder) => builder
         providesTags: [{ type: "Auth", id: "login" }],
         transformResponse: (response) => response.user,
         transformErrorResponse: (response) => response.data,
+        invalidatesTags: ["Auth", "Users", "Messages"],
     })
 
 
@@ -29,6 +30,7 @@ export const registerUser = (builder) => builder
         providesTags: [{ type: "Auth", id: "register" }],
         transformResponse: (response) => response,
         transformErrorResponse: (response) => response.data,
+        invalidatesTags: ["Auth", "Users", "Messages"],
     })
 
 
@@ -38,7 +40,7 @@ export const registerUser = (builder) => builder
 export const logoutUser = (builder) => builder
     .query({
         query: () => ({
-            url: '/auth/login',
+            url: '/auth/logout',
             method: "GET"
         }),
         transformErrorResponse: (response) => response.data,
@@ -52,14 +54,17 @@ export const logoutUser = (builder) => builder
  */
 export const verifyToken = (builder) => builder
     .query({
-        query: () => ({
+        query: (isAuthPage) => ({
             url: '/auth/verify-token',
             method: "GET",
         }),
         keepUnusedDataFor: 60 * 60, // token should be reverified after 1hr
         transformResponse: (response) => response.user,
         providesTags: [{ type: "Auth", id: "verify-token" }],
-        invalidatesTags: (response, error) => {
+        invalidatesTags: (response, error, isAuthPage) => {
+            if(error && isAuthPage) {
+                return ["Users", "Messages", "Friends"]
+            }
             if (error) {
                 return ["Auth", "Users", "Messages"]
             }

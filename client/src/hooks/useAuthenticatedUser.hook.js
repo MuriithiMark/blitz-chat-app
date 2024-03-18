@@ -4,23 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { useVerifyTokenQuery } from "../features/api";
 
 
-/**
- * 
- * @param {boolean} isAuthPage - should be `true` only in `/auth/login` or `/auth/login`
- * @returns {[object, boolean]} [user, isLoading]
- */
-const useAuthenticatedUser = (isAuthPage = false) => {
+const useAuthenticatedUser = (options = { isAuthPage: false, redirectTo: null, onError: null }) => {
+
+    const { isAuthPage, redirectTo, onError } = options;
+    
     const navigate = useNavigate()
-    const { data, isLoading, isSuccess, isError } = useVerifyTokenQuery();
+    const { data, error, isLoading, isSuccess, isError } = useVerifyTokenQuery(isAuthPage);
 
     useEffect(() => {
-        if (!isAuthPage && isError) {
-            return navigate("/auth/login");
+        if (isError) {
+            if (onError) return onError()
+            if (!isAuthPage) return navigate('/auth/login')
         }
-        if (isAuthPage && isSuccess) {
-            return navigate('/')
-        }
-    }, [isError, isSuccess]);
+
+        if (isSuccess && isAuthPage) return navigate(redirectTo ?? "/");
+    }, [isError, isSuccess])
 
     return [data, isLoading]
 }

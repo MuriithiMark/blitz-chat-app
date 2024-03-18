@@ -8,8 +8,8 @@ import { useRegisterUserMutation } from "../../../features/api";
 import useAuthenticatedUser from "../../../hooks/useAuthenticatedUser.hook";
 
 const SignUpForm = () => {
-  useAuthenticatedUser();
-  
+  useAuthenticatedUser({isAuthPage: true});
+
   const [formData, handleChange] = useFormState({
     email: "",
     username: "",
@@ -20,10 +20,11 @@ const SignUpForm = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     registerUser(formData)
       .unwrap()
-      .then(() => navigate('/auth/login'))
+      .then(() => navigate("/auth/login"))
       .catch((error) => {
         console.error(error);
       });
@@ -34,7 +35,7 @@ const SignUpForm = () => {
       isLoading={result.isLoading}
       loadingComponent={<span>Loading</span>}
     >
-      <form>
+      <form method="post" onSubmit={handleSubmit}>
         <label>
           Email
           <input
@@ -78,7 +79,7 @@ const SignUpForm = () => {
 
         <br />
 
-        <button type="button" onClick={handleSubmit}>
+        <button type="submit" className="submit-btn">
           Sign Up
         </button>
         <span>
