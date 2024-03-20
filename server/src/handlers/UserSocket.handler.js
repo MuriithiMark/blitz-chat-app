@@ -37,7 +37,6 @@ const UserSocketHandler = async (socket) => {
         console.log('New Message received: ', messageData);
         try {
             const message = await UserMessageModel.create(messageData);
-            console.log('New Message: ', message);
             // Send to both that a new message was created
             // TODO Preferrably check that friend is online, if not online send notification instead
             socket.to(to).emit("/messages/new", {

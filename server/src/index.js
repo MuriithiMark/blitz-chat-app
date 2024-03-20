@@ -56,6 +56,8 @@ const userSocketServer = io.of("/users");
 const groupSocketServer = io.of("/groups");
 const notificationSockerServer = io.of("/notifications")
 
+// const NotificationSocket = io()
+
 io.engine.on("initial_headers", (headers, req) => {
     headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
     headers["Access-Control-Allow-Credentials"] = true
