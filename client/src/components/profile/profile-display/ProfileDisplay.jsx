@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import "./profile-display.scss";
 import FullScreenOverlay from "../../overlays/full-screen-overlay/FullScreenOverlay";
@@ -7,10 +7,22 @@ import AvatarImg from "../avatar-img/AvatarImg";
 import { useNavigate } from "react-router-dom";
 import PenFillIcon from "../../icons/PenFillIcon";
 import CancelXIcon from "../../icons/CancelXIcon";
+import { useLogoutUserMutation } from "../../../features/api";
+import AuthContext from "../../../contexts/auth/AuthContext";
+// import { logoutUser } from "../../../features/api/auth.api";
 
 const ProfileDisplay = ({ onClose }) => {
-  const [currentUser] = useAuthenticatedUser();
+  const {user: currentUser, logoutUser} = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    logoutUser()
+      .then(() => {
+        onClose()
+        return navigate("/")
+      })
+      .catch(console.error)
+  }
 
   return (
     <FullScreenOverlay className={`overlay`} onClick={onClose}>
@@ -49,6 +61,12 @@ const ProfileDisplay = ({ onClose }) => {
           <span>10 Friends</span>
           <span>10 Posts</span>
           <span>20 Notifications</span>
+        </div>
+
+        <div className="profile-bottom">
+          <button onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
     </FullScreenOverlay>

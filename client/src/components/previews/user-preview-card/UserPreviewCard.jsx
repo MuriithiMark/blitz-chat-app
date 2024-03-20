@@ -20,11 +20,7 @@ const UserPreviewCard = ({ user }) => {
         <Link to={`/user/${user.username}`}>
           <span className="username">{user.username}</span>
         </Link>
-        {true ? (
-          <FriendShipStatusAction user={user} />
-        ) : (
-          <span>No Friends Available</span>
-        )}
+        <FriendShipStatusAction className="friendship-actions" user={user} />
       </div>
     </div>
   );

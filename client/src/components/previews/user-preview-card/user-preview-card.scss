@@ -66,3 +66,12 @@
 .selected {
     background-color: purple;
 }
+
+
+.friendship-actions {
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    // justify-content: center;
+    gap: 1em;
+}

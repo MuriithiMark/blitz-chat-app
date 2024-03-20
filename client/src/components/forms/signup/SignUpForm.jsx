@@ -6,8 +6,7 @@ import useFormState from "../../../hooks/useFormState.hook";
 import { useRegisterUserMutation } from "../../../features/api";
 
 const SignUpForm = () => {
-
-  const [formData, handleChange] = useFormState({
+  const [formData, handleChange, reset] = useFormState({
     email: "",
     username: "",
     password: "",
@@ -21,7 +20,10 @@ const SignUpForm = () => {
     event.preventDefault();
     registerUser(formData)
       .unwrap()
-      .then(() => navigate("/auth/login"))
+      .then(() => {
+        reset();
+        return navigate("/auth/login");
+      })
       .catch((error) => {
         console.error(error);
       });

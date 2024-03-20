@@ -12,7 +12,7 @@ const UsersPage = () => {
   } = useGetAllUsersQuery();
 
   if (isError) {
-    return <div style={{ color: "red", fontSize: "xxx-large" }}>{error}</div>;
+    return <div style={{ color: "red", fontSize: "xxx-large" }}>{error.message}</div>;
   }
 
   if (isLoading) {

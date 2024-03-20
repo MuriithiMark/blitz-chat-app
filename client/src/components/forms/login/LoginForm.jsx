@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./login-form.scss";
@@ -6,27 +6,24 @@ import { useDispatch } from "react-redux";
 import useFormState from "../../../hooks/useFormState.hook";
 import { useLoginUserMutation } from "../../../features/api";
 import { onLogin } from "../../../features/auth/auth.slice";
+import AuthContext from "../../../contexts/auth/AuthContext";
 
 const LoginForm = () => {
 
-  const [formData, handleChange] = useFormState({
+  const [formData, handleChange, reset] = useFormState({
     username: "",
     password: "",
   });
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const [loginUser, result] = useLoginUserMutation();
+  // const [loginUser, result] = useLoginUserMutation();
+  const { loginUser } = useContext(AuthContext)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     loginUser(formData)
-      .unwrap()
-      .then((data) => {
-        dispatch(onLogin(data));
-        result.reset();
-        console.log("fulfilled ", data);
+      .then(() => {
         return navigate("/");
       })
       .catch((error) => {

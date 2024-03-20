@@ -29,7 +29,12 @@ export const getUserFriendById = (builder) => builder
         query: (friendId) => `/friends/users/${friendId}`,
         transformResponse: (response) => response.friend,
         transformErrorResponse: (response) => response.data.message,
-        providesTags: (result, error, friendId) => [{ type: "Friends", id: result.id }],
+        providesTags: (result, error, friendId) => {
+            if(error) {
+                return [{type: "Friends", id: "LIST"}]
+            }
+            return  [{ type: "Friends", id: result.id }]
+        },
         invalidateTags: (result, error, friendId) => {
             console.log('Result: ', result)
             if (error.status === 401) {

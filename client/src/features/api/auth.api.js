@@ -38,14 +38,16 @@ export const registerUser = (builder) => builder
  * @param {import("../../types/builder-function.d").BuilderFunction} builder
  */
 export const logoutUser = (builder) => builder
-    .query({
+    .mutation({
         query: () => ({
             url: '/auth/logout',
             method: "GET"
         }),
         transformErrorResponse: (response) => response.data,
         providesTags: [{ type: "Auth", id: "logout" }],
-        invalidatesTags: ["Auth", "Users", "Messages"],
+        invalidatesTags: (result) => {
+            return ["Auth", "Users", "Messages"]
+        }
     })
 
 /**
@@ -64,7 +66,7 @@ export const verifyToken = (builder) => builder
         providesTags: [{ type: "Auth", id: "verify-token" }],
         invalidatesTags: (result, error, isAuthPage) => {
             console.log(error)
-            if(error && isAuthPage) {
+            if (error && isAuthPage) {
                 return ["Users", "Messages", "Friends"]
             }
             if (error) {

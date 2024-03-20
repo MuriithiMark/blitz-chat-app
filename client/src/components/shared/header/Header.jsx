@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 import "./header.scss";
@@ -10,9 +10,10 @@ import { NavLink } from "react-router-dom";
 import AvatarImg from "../../profile/avatar-img/AvatarImg";
 import NotificationDisplay from "../../notifications/NotificationDisplay";
 import ProfileDisplay from "../../profile/profile-display/ProfileDisplay";
+import AuthContext from "../../../contexts/auth/AuthContext";
 
 const Header = ({ className }) => {
-  const [user, isLoading] = useAuthenticatedUser();
+  const {user, isLoading} = useContext(AuthContext);
   const [profileIsVisble, setProfileIsVisible] = useState(false);
   const [notificationsIsVisible, setNotificationsIsVisible] = useState(false);
   const navigate = useNavigate();

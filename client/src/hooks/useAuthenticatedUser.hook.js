@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useVerifyTokenQuery } from "../features/api";
+import AuthContext from "../contexts/auth/AuthContext";
 
 
 const useAuthenticatedUser = (options = { isAuthPage: false, redirectTo: null, onError: null }) => {
@@ -9,18 +10,24 @@ const useAuthenticatedUser = (options = { isAuthPage: false, redirectTo: null, o
     
     const navigate = useNavigate()
 
-    const { data, error, isLoading, isSuccess, isError } = useVerifyTokenQuery(isAuthPage);
+    // const { data, error, isLoading, isSuccess, isError } = useVerifyTokenQuery(isAuthPage);
+    const { user, error, verifyToken, isLoading} = useContext(AuthContext);
 
     useEffect(() => {
-        if (isError) {
+        verifyToken()
+    }, []);
+
+    
+    useEffect(() => {
+        if (error) {
             if (onError) return onError(error)
             if (!isAuthPage) return navigate('/auth/login')
         }
 
-        if (isSuccess && isAuthPage) return navigate(redirectTo ?? "/");
-    }, [isError, isSuccess])
+        if (user && isAuthPage) return navigate(redirectTo ?? "/");
+    }, [error, user])
 
-    return [data, isLoading]
+    return [user, isLoading]
 }
 
 export default useAuthenticatedUser;

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import "./index.scss";
 import RootLayoutPage from "./pages/layouts/RootLayoutPage";
@@ -14,7 +14,8 @@ import ChatLayout from "./pages/chat/ChatLayout";
 import UsersPage from "./pages/users/UsersPage";
 import TestPage from "./pages/test/TestPage";
 import NotFoundPage from "./pages/error/NotFoundPage";
-
+import AuthContextProvider from "./contexts/auth/AuthContextProvider";
+import App from "./App";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
         element: <NewsFeed />,
         children: [
           {
-            path: "newsfeed/:id",
+            path: "newsfeed",
             element: <NewsFeed />,
           },
         ],
@@ -86,8 +87,11 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+    <AuthContextProvider>
+      <Provider store={store}>
+        {/* <RouterProvider router={router} /> */}
+        <App />
+      </Provider>
+    </AuthContextProvider>
   </React.StrictMode>
 );

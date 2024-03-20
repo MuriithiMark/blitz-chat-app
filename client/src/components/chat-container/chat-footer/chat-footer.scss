@@ -47,6 +47,19 @@
     }
 }
 
+.more-btn {
+    margin: .4em;
+    height: 3em;
+    width: 3em;
+}
+
+.more-send-options {
+    position: absolute;
+    width: 12em;
+    height: 36em;
+    background-color: red;
+}
+
 .send-btn:disabled {
     opacity: 0.7;
     cursor: not-allowed;

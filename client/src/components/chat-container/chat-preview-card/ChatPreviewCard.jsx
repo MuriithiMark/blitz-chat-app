@@ -13,25 +13,27 @@ const ChatPreviewCard = ({ friend }) => {
   };
 
   return (
-    <div
-      className="chat-preview-card-component"
-      onClick={handleChatPreviewClick}
-    >
-      <AvatarImg
-        src={friend.avatarUrl}
-        name={friend.name}
-        username={friend.username}
-      />
-      <div className="bio">
-        <Link to={`/user/${friend.username}`} className="username">
-          <span>{friend.username}</span>
-        </Link>
-        <FriendShipStatusAction
-          user={friend}
-          className={"friendship-actions"}
+    friend && (
+      <div
+        className="chat-preview-card-component"
+        onClick={handleChatPreviewClick}
+      >
+        <AvatarImg
+          src={friend.avatarUrl}
+          name={friend.name}
+          username={friend.username}
         />
+        <div className="bio">
+          <Link to={`/user/${friend.username}`} className="username">
+            <span>{friend.username}</span>
+          </Link>
+          <FriendShipStatusAction
+            user={friend}
+            className={"friendship-actions"}
+          />
+        </div>
       </div>
-    </div>
+    )
   );
 };
 

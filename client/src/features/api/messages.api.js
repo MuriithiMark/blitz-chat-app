@@ -28,14 +28,14 @@ export const getMessages = (builder) => builder
             let socket = null;
             if (context === "groups") {
                 socket = groupSocket;
-                socket.auth = {group: authData}
+                socket.auth = { group: authData }
             }
             else if (context === "friends") {
                 socket = userSocket
                 socket.auth = { user: authData }
             }
 
-            if(!socket.connected) {
+            if (!socket.connected) {
                 socket.connect();
             }
 
@@ -75,7 +75,10 @@ export const getMessageById = (builder) => builder
  */
 export const getMessagingContext = (builder) => builder
     .query({
-        query: ({ context, contextId }) => `/${context}/${contextId}`,
+        query: ({ context, contextId }) => {
+            console.log({ context, contextId });
+            return `/${context}/${contextId}`
+        },
         transformResponse: (response) => response.friendShip,
         transformErrorResponse: (response) => {
             console.log(response)

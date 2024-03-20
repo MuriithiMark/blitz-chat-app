@@ -13,7 +13,11 @@ const useFormState = (formData) => {
         })
     }
 
-    return [data, handleChange];
+    const reset = () => {
+        setData(formData)
+    }
+
+    return [data, handleChange, reset];
 }
 
 

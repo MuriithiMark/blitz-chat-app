@@ -14,7 +14,7 @@ import CheckIcon from "../../icons/CheckIcon";
 import CancelXIcon from "../../icons/CancelXIcon";
 
 const FriendShipStatusAction = ({ className, user }) => {
-  const [currentUser] = useAuthenticatedUser();
+  const [currentUser, isLoadingCurrentUser] = useAuthenticatedUser();
 
   const {
     data: friendShip,
@@ -23,6 +23,15 @@ const FriendShipStatusAction = ({ className, user }) => {
     isSuccess,
     isError,
   } = useGetUserFriendByIdQuery(user.id);
+
+  if(isLoadingCurrentUser) {
+    return <span>Loading...</span>
+  }
+
+  if(!currentUser) {
+    console.error('Error loadin user ', error);
+    return;
+  }
 
   // Logged In cannot be his own friend
   if (user.id === currentUser.id) {
@@ -33,7 +42,7 @@ const FriendShipStatusAction = ({ className, user }) => {
   if (!friendShip) {
     return (
       <div className={className}>
-        <SendFriendRequest friendId={user.id} />;
+        <SendFriendRequest friendId={user.id} />
       </div>
     );
   }
@@ -52,7 +61,10 @@ const FriendShipStatusAction = ({ className, user }) => {
   if (friendShip.fromId === currentUser.id) {
     return (
       <div className={className} >
-        <HourGlassIcon width={20} height={20} color={"lightblue"} />
+        <div className="waiting">
+          <HourGlassIcon width={20} height={20} color={"orange"} />
+        </div>
+        {/* <HourGlassIcon width={20} height={20} color={"lightblue"} /> */}
         <DeclineFriendRequest friendId={user.id} />
       </div>
     );
