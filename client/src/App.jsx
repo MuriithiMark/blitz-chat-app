@@ -21,7 +21,7 @@ const App = () => {
           </Route>
           <Route path="/chat" element={<ChatLayout />}>
             <Route
-              path="chat/:context/:contextId"
+              path=":context/:contextId"
               element={<ChatContainer />}
             />
           </Route>

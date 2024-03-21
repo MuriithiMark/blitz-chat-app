@@ -19,17 +19,19 @@ const GroupForm = () => {
   const dispatch = useDispatch()
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   if (!currentUser) {
-    return navigate("/auth/login");
+    dispatch(closeModal())
+    // return navigate("/auth/login");
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       await axios.post("/groups", data);
+      dispatch(closeModal())
       reset();
     } catch (error) {
       console.error(error);

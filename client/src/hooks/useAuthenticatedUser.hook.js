@@ -5,19 +5,21 @@ import { useVerifyTokenQuery } from "../features/api";
 import AuthContext from "../contexts/auth/AuthContext";
 
 
-const useAuthenticatedUser = (options = { isAuthPage: false, redirectTo: null, onError: null }) => {
-    const { isAuthPage, redirectTo, onError } = options;
-    
+const useAuthenticatedUser = (options = { isAuthPage: false, verify: false, redirectTo: null, onError: null }) => {
+    const { isAuthPage, verify, redirectTo, onError } = options;
+
     const navigate = useNavigate()
 
     // const { data, error, isLoading, isSuccess, isError } = useVerifyTokenQuery(isAuthPage);
-    const { user, error, verifyToken, isLoading} = useContext(AuthContext);
+    const { user, error, isLoading } = useContext(AuthContext);
 
     useEffect(() => {
-        verifyToken()
-    }, []);
+        if (verify) {
+            verifyToken()
+        }
+    }, [verify]);
 
-    
+
     useEffect(() => {
         if (error) {
             if (onError) return onError(error)
