@@ -14,6 +14,7 @@ export type Group = {
     name: string;
     about: string;
     avatarUrl?: string;
+    createdAt: Date;
     messages: GroupMessage[];
 }
 

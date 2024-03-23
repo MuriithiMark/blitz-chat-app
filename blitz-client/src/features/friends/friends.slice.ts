@@ -1,6 +1,6 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
 import { Message } from "../app/app.slice";
-import {DateSortedMessageArray} from "../../utils/date-sort";
+import { DateSortedMessageArray } from "../../utils/date-sort";
 
 export type FriendshipMessage = Message & {
     friendShipId: string;
@@ -15,6 +15,7 @@ export type Friend =
         email: string,
         avatarUrl: string
         name: string;
+        createdAt: Date;
         friendShipId: string;
         toId?: string;
         fromId?: string;
@@ -31,7 +32,7 @@ const friendsSlice = createSlice({
         addFriends: (_state, action: Action & { payload: Friend[] }) => {
             const friends = action.payload.map((friend) => {
                 return {
-                 ...friend,
+                    ...friend,
                     messages: DateSortedMessageArray(friend.messages)
                 }
             })
@@ -41,7 +42,7 @@ const friendsSlice = createSlice({
             return state.map(friend => {
                 if (friend.friendShipId === action.payload.friendShipId) {
                     return {
-                     ...friend,
+                        ...friend,
                         messages: DateSortedMessageArray([...friend.messages, action.payload])
                     }
                 }

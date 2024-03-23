@@ -12,11 +12,17 @@ import AvatarImg from "../../avatar-img/AvatarImg";
 import { Message, setContext } from "../../../features/app/app.slice";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import useSocket from "../../../hooks/useSocket";
-import { Group, GroupMessage } from "../../../features/groups/groups.slice";
+import {
+  Group,
+  GroupMessage,
+  addGroups,
+} from "../../../features/groups/groups.slice";
+import { getUserGroups } from "../../../services/api/groups";
+import { MergedArrayDateSorted } from "../../../utils/merge-array";
+import { isGroup } from "../../../utils/type-guards";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
-  const friends = useSelector((state: RootState) => state.friends);
   const app = useSelector((state: RootState) => state.app);
 
   useEffect(() => {
@@ -24,31 +30,68 @@ const ChatContainer = () => {
     getUserFriends()
       .then((friends) => dispatch(addFriends(friends)))
       .catch(console.error);
+
+    // fetch groups
+    getUserGroups()
+      .then((groups) => dispatch(addGroups(groups)))
+      .catch(console.error);
   }, []);
 
   return (
     <div className="chat-container">
       <div className="side-bar">
         <div className="top"></div>
-        <div className="bottom">
-          {friends.length === 0 && <span>No Friends</span>}
-          {friends.map((friend) => (
-            <FriendPreviewCard friend={friend} key={friend.id} />
-          ))}
-        </div>
+        <ChatSidebarBottom />
       </div>
       {app.data && (
         <div className="main">
           <div className="header">
             <AvatarImg
-              src={(app.data as Friend).avatarUrl}
-              username={(app.data as Friend).username}
+              src={app.data.avatarUrl}
+              username={isGroup(app.data) ? app.data.name : app.data.username}
             />
           </div>
           <ChatContent />
           <ChatFooter />
         </div>
       )}
+    </div>
+  );
+};
+
+const ChatSidebarBottom = () => {
+  const friends = useSelector((state: RootState) => state.friends);
+  const groups = useSelector((state: RootState) => state.groups);
+  const [mergedData, setMergedData] = useState<(Friend | Group)[]>();
+
+  useEffect(() => {
+    setMergedData(MergedArrayDateSorted(friends, groups));
+  }, [friends, groups]);
+
+  if (!mergedData) {
+    return (
+      <div className="bottom loading">
+        <span>Loading</span>
+      </div>
+    );
+  }
+
+  if (!mergedData.length) {
+    return (
+      <div className="bottom no-friends">
+        <span>No Friends</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bottom">
+      {mergedData.map((entity) => {
+        if (isGroup(entity)) {
+          return <GroupPreviewCard group={entity} key={entity.id} />;
+        }
+        return <FriendPreviewCard friend={entity} key={entity.id} />;
+      })}
     </div>
   );
 };
@@ -169,11 +212,6 @@ const FriendMessageCard = ({ message }: { message: FriendshipMessage }) => {
 const FriendPreviewCard = ({ friend }: { friend: Friend }) => {
   const dispatch = useDispatch();
   const onPreviewCardClick = async () => {
-    console.log({
-      friend: friend.username,
-      len: friend.messages.length,
-      messages: friend.messages,
-    });
     dispatch(
       setContext({
         data: friend,
@@ -203,4 +241,34 @@ const FriendPreviewCard = ({ friend }: { friend: Friend }) => {
 const GroupMessageCard = ({ message }: { message: GroupMessage }) => {
   return <div>{message.content}</div>;
 };
+
+const GroupPreviewCard = ({ group }: { group: Group }) => {
+  const dispatch = useDispatch();
+  const onPreviewCardClick = async () => {
+    dispatch(
+      setContext({
+        data: group,
+        isGroup: true,
+        contextId: group.id,
+      })
+    );
+  };
+
+  return (
+    <div
+      className="preview-card group-preview-card"
+      onClick={onPreviewCardClick}
+    >
+      <AvatarImg
+        src={group.avatarUrl}
+        username={group.name}
+        name={group.name}
+      />
+      <div className="info">
+        <span>{group.name}</span>
+      </div>
+    </div>
+  );
+};
+
 export default ChatContainer;

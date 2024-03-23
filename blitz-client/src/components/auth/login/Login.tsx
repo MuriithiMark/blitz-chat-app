@@ -38,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-container">
+    <div className="form-container">
       <form onSubmit={onLoginClick}>
         <label htmlFor="username">
           Username

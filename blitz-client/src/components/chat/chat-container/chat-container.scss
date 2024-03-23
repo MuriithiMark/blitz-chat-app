@@ -24,8 +24,12 @@
 
         .bottom {
             width: 100%;
+            height: calc(100% - 4em);
             border-top: .05em solid gainsboro;
+            overflow-y: auto;
         }
+
+        // .bottom
     }
 
     .main {
@@ -100,6 +104,7 @@
 
     img {
         border-radius: .4em;
+        height: 4em;
     }
 
     .info {

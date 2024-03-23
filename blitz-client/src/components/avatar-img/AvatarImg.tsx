@@ -28,7 +28,7 @@ const AvatarImg = ({
       src={
         src
           ? src
-          : `https://ui-avatars.com/api/?name=${name ?? username}${
+          : `https://ui-avatars.com/api/?name=${name ? name : username}${
               extraQueryParams ? `&${extraQueryParams}` : ""
             }`
       }
