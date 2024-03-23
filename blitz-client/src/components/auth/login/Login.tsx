@@ -53,7 +53,7 @@ const Login = () => {
         <label htmlFor="password">
           Password
           <input
-            type="text"
+            type="password"
             name="password"
             value={data.password}
             onChange={handleChange}

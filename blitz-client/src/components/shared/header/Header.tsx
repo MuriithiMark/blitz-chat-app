@@ -4,19 +4,23 @@ import "./header.scss";
 import { Link } from "react-router-dom";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import { useDispatch } from "react-redux";
-import { toggleLogin, toggleRegister } from "../../../features/modals/modal.slice";
+import {
+  toggleLogin,
+  toggleRegister,
+} from "../../../features/modals/modal.slice";
+import AvatarImg from "../../avatar-img/AvatarImg";
 
 const Header = () => {
   const { user, isLoading } = useContext(AuthContext);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const login = async () => {
-    dispatch(toggleLogin())
-  }
+    dispatch(toggleLogin());
+  };
 
   const register = async () => {
-    dispatch(toggleRegister())
-  }
+    dispatch(toggleRegister());
+  };
 
   return (
     <header>
@@ -34,17 +38,25 @@ const Header = () => {
             </div>
             <div className="account-profile">
               <button className="btn btn-icon btn-profile">
-                <i className="fas fa-user"></i>
+                <AvatarImg
+                  className="img-avatar"
+                  username={user?.username}
+                  src={user?.avatarUrl}
+                />
               </button>
             </div>
           </div>
         ) : (
           <div className="user-status logged-out">
             <div className="login">
-              <button className="btn login-btn" onClick={login}>Login</button>
+              <button className="btn login-btn" onClick={login}>
+                Login
+              </button>
             </div>
             <div className="sign-in">
-              <button className="btn sign-in-btn" onClick={register}>Sign in</button>
+              <button className="btn sign-in-btn" onClick={register}>
+                Sign in
+              </button>
             </div>
           </div>
         )}
