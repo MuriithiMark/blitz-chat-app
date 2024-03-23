@@ -1,15 +1,20 @@
 import { Action, createSlice } from "@reduxjs/toolkit";
-import { Friend, FriendshipMessage } from "../friends/friends.slice";
+import { Friend } from "../friends/friends.slice";
+import { Group } from "../groups/groups.slice";
 
-
+export interface Message {
+    id: string;
+    content: string;
+    createdAt: Date;
+}
 
 type App = {
     socketFired: boolean;
     contextId?: string;
-    data?: Friend;
     isGroup: boolean;
-    // messages: Message[]
+    data?:  Group | Friend
 }
+
 
 const initialState: App = {
     socketFired: false,
@@ -23,26 +28,22 @@ const appSlice = createSlice({
     initialState: initialState,
     reducers: {
         setContext: (state, action: Action & { payload: Omit<App, "socketFired"> }) => {
-            return { ...state, ...action.payload };
+            console.log('reset done ', action.payload)
+            state.contextId = action.payload.contextId;
+            state.isGroup = action.payload.isGroup;
+            state.data = action.payload.data;
         },
         fireSocket: (state) => {
             state.socketFired = true;
         },
-        setContextId: (state, action: Action & { payload: string }) => {
-            state.contextId = action.payload;
+        newContextMessage: (state, action: Action & { payload: unknown }) => {
+            console.log('setting context')
+            // @ts-ignore
+            state.data!.messages = [...state.data!.messages, action.payload];
         },
-        setData: (state, action: Action & { payload: Friend }) => {
-            state.data = action.payload;
-        },
-        setIsGroup: (state, action: Action & { payload: boolean }) => {
-            state.isGroup = action.payload;
-        },
-        setMessages: (state, action: Action & { payload: FriendshipMessage[] }) => {
-            state.data!.messages = action.payload;
-        }
     }
 })
 
-export const { setContext, fireSocket } = appSlice.actions;
+export const { setContext, fireSocket, newContextMessage } = appSlice.actions;
 
 export default appSlice.reducer;

@@ -1,15 +1,62 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect } from "react"
+import { useDispatch } from "react-redux";
+
 import socket from "../services/socket"
 import AuthContext from "../contexts/auth/AuthContext"
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../features/store";
-import { fireSocket } from "../features/app/app.slice";
+import store from "../features/store";
+import { newContextMessage } from "../features/app/app.slice";
+import { Friend, FriendshipMessage, newFriendsMessage } from "../features/friends/friends.slice";
+import { GroupMessage, newGroupMessage } from "../features/groups/groups.slice";
+
+type NewUserMessageResponse = {
+    status: 'success',
+    message: FriendshipMessage
+} | {
+    status: "fail";
+    message: string;
+}
+
+type NewGroupMessageResponse = ({
+    status: 'success',
+    message: GroupMessage
+} | {
+    status: 'fail';
+    message: string
+})
 
 const useSocket = () => {
     const { user } = useContext(AuthContext);
-    // const [fired, setFired] = useState(false);
-    // const socketFired = useSelector((state: RootState) => state.app.socketFired);
-    // const dispatch = useDispatch()
+    const dispatch = useDispatch();
+
+
+    const onNewUserMessage = async (data: NewUserMessageResponse) => {
+        if (data.status === "fail") {
+            console.error(data);
+            return;
+        }
+
+        const { message } = data;
+        const app = store.getState().app;
+
+        if (message.friendShipId === (app.data as Friend).friendShipId) {
+            dispatch(newContextMessage(message));
+        }
+        dispatch(newFriendsMessage(message))
+    }
+
+    const onNewGroupMessage = async (data: NewGroupMessageResponse) => {
+        if (data.status === 'fail') {
+            console.error(data);
+            return;
+        }
+        const { message } = data;
+        const app = store.getState().app;
+        console.log({ 'group-received ': message });
+        if (message.groupId === app.data?.id) {
+            dispatch(newContextMessage(message))
+        }
+        dispatch(newGroupMessage(message))
+    }
 
     useEffect(() => {
         if (!user) {
@@ -18,21 +65,13 @@ const useSocket = () => {
             return;
         }
 
-        // // alter state immediately
-        // setFired(true);
-        // dispatch(fireSocket())
-
-        // all fired
-        // if (socketFired || fired) {
-        //     console.log('Socket fired!')
-        //     return;
-        // }
-
         if (!socket.connected) {
             console.log('Should connect only once')
             socket.auth = { user }
             socket.connect()
             // place all listeners here
+            socket.on("/friends/messages/new", onNewUserMessage)
+            socket.on("/groups/messages/new", onNewGroupMessage)
         }
 
         return () => {
@@ -41,6 +80,7 @@ const useSocket = () => {
             socket.disconnect()
         }
     }, [user])
+
 
     return socket
 }

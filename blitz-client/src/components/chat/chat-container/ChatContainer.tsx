@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import "./chat-container.scss";
 import { RootState } from "../../../features/store";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { getUserFriends } from "../../../services/api/friends";
 import {
   Friend,
@@ -9,14 +9,15 @@ import {
   addFriends,
 } from "../../../features/friends/friends.slice";
 import AvatarImg from "../../avatar-img/AvatarImg";
-import { setContext } from "../../../features/app/app.slice";
+import { Message, setContext } from "../../../features/app/app.slice";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import useSocket from "../../../hooks/useSocket";
+import { Group, GroupMessage } from "../../../features/groups/groups.slice";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
   const friends = useSelector((state: RootState) => state.friends);
-  const contextData = useSelector((state: RootState) => state.app.data);
+  const app = useSelector((state: RootState) => state.app);
 
   useEffect(() => {
     // fetch friends
@@ -24,8 +25,6 @@ const ChatContainer = () => {
       .then((friends) => dispatch(addFriends(friends)))
       .catch(console.error);
   }, []);
-
-  console.log({ contextData });
 
   return (
     <div className="chat-container">
@@ -38,19 +37,15 @@ const ChatContainer = () => {
           ))}
         </div>
       </div>
-      {contextData && (
+      {app.data && (
         <div className="main">
           <div className="header">
             <AvatarImg
-              src={contextData.avatarUrl}
-              username={contextData.username}
+              src={(app.data as Friend).avatarUrl}
+              username={(app.data as Friend).username}
             />
           </div>
-          <div className="content">
-            {contextData.messages.map((message) => (
-              <MessageCard key={message.id} message={message} isGroup={false} />
-            ))}
-          </div>
+          <ChatContent />
           <ChatFooter />
         </div>
       )}
@@ -58,11 +53,36 @@ const ChatContainer = () => {
   );
 };
 
+const ChatContent = () => {
+  const app = useSelector((state: RootState) => state.app);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView();
+  }, [app.data?.messages]);
+
+  return (
+    app.data && (
+      <div className="content">
+        {!app.isGroup
+          ? (app.data as Friend).messages.map((message) => (
+              <FriendMessageCard key={message.id} message={message} />
+            ))
+          : (app.data as unknown as Group).messages.map((message) => (
+              <GroupMessageCard key={message.id} message={message} />
+            ))}
+        <div ref={scrollRef} />
+      </div>
+    )
+  );
+};
+
 const ChatFooter = () => {
   const [text, setText] = useState("");
   const { user } = useContext(AuthContext);
-  const socket = useSocket();
   const app = useSelector((state: RootState) => state.app);
+  const socket = useSocket();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value);
@@ -121,17 +141,8 @@ const ChatFooter = () => {
   );
 };
 
-const MessageCard = ({
-  message,
-  isGroup = false,
-}: {
-  message: FriendshipMessage;
-  isGroup: boolean;
-}) => {
+const FriendMessageCard = ({ message }: { message: FriendshipMessage }) => {
   const { user } = useContext(AuthContext);
-  if (isGroup) {
-    return <div>Group Message {message.content}</div>;
-  }
 
   return (
     <div className="message-card">
@@ -158,6 +169,11 @@ const MessageCard = ({
 const FriendPreviewCard = ({ friend }: { friend: Friend }) => {
   const dispatch = useDispatch();
   const onPreviewCardClick = async () => {
+    console.log({
+      friend: friend.username,
+      len: friend.messages.length,
+      messages: friend.messages,
+    });
     dispatch(
       setContext({
         data: friend,
@@ -184,4 +200,7 @@ const FriendPreviewCard = ({ friend }: { friend: Friend }) => {
   );
 };
 
+const GroupMessageCard = ({ message }: { message: GroupMessage }) => {
+  return <div>{message.content}</div>;
+};
 export default ChatContainer;
