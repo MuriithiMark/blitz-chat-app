@@ -84,7 +84,7 @@ const verifyToken = async (req, res) => {
     }
     try {
         const user = await verifyJWT_Token(auth_token);
-        res.status(200).send({ status: "success", user }).end()
+        res.status(200).send({ status: "success", user, token: auth_token }).end()
     } catch (error) {
         res.status(401).send({ status: "fail", message: error.message }).end()
     }

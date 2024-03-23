@@ -32,7 +32,8 @@ model User {
   groups           GroupMember[]
   notifications    Notification[]
   friendShipTo     FriendShip[]      @relation("To")
-  FriendShipFrom   FriendShip[]      @relation("From")
+  friendShipFrom   FriendShip[]      @relation("From")
+  groupMessages    GroupMessage[]
 }
 
 model Post {
@@ -132,6 +133,7 @@ model GroupMessage {
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
   group     Group    @relation(fields: [groupId], references: [id])
+  from      User     @relation(fields: [fromId], references: [id])
 }
 
 model UserMessage {

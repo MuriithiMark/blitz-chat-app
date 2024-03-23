@@ -62,7 +62,15 @@ const getUserGroups = async (req, res, next) => {
                 memberId: userId,
             },
             include: {
-                group: true
+                group: {
+                    include: {
+                        messages: {
+                            include: {
+                                from: true,
+                            }
+                        }
+                    }
+                }
             }
         })
         const userGroups = groups.map((group) => group.group);

@@ -100,7 +100,8 @@ const getUserFriendsByUserId = async (userId) => {
             },
             include: {
                 to: true,
-                from: true
+                from: true,
+                messages: true
             }
         });
         const friends = friendShips.map((friendShip) => (friendShip.userId === userId) ? ({
@@ -108,13 +109,15 @@ const getUserFriendsByUserId = async (userId) => {
             friendShipId: friendShip.id,
             fromId: friendShip.userId,
             toId: friendShip.friendId,
+            messages: friendShip.messages
         })
             :
             ({
                 ...friendShip.from,
                 friendShipId: friendShip.id,
                 fromId: friendShip.userId,
-                toId: friendShip.friendId
+                toId: friendShip.friendId,
+                messages: friendShip.messages
             })
         )
         return friends
