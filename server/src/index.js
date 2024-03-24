@@ -13,6 +13,7 @@ import friendShipRouter from "./routes/friendship-router.js";
 import userMessageRouter from "./routes/user-message.router.js";
 import groupRouter from "./routes/group-router.js";
 import SocketHandler from "./handlers/socket.handler.js";
+import prisma from "./prisma.js";
 
 
 dotenv.config()
@@ -73,11 +74,28 @@ io.use((socket, next) => {
     if (!user) {
         return next(new Error({ data: 'fail', message: "invalid user" }))
     }
+    // Join user to all groups, they already are int
     console.log('Socket for ', socket.username)
     socket.id = user.id;
     socket.user = user;
-    next()
-})
+
+    prisma.groupMember.findMany({
+        where: {
+            memberId: user.id
+        }
+    })
+        .then((memberShips) => {
+            console.error({ memberShips })
+            memberShips.forEach((memberShip) => socket.join(memberShip.groupId))
+            return next()
+        })
+        .catch((error) => {
+            console.error(error);
+            return next(error)
+        })
+});
+
+
 
 io.on("connection", SocketHandler);
 

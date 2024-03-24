@@ -2,8 +2,20 @@ import prisma from "../prisma.js";
 
 const create = async (newGroup) => {
     try {
+        const existingGroup = await prisma.group.findFirst({
+            where: {
+                name: newGroup.name
+            }
+        })
+        if (existingGroup) {
+            throw new Error('group already exists')
+        }
         const group = await prisma.group.create({
-            data: newGroup
+            data: newGroup,
+            include: {
+                members: true,
+                messages: true
+            }
         });
         return group;
     } catch (error) {

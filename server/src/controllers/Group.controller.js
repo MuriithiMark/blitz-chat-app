@@ -5,7 +5,7 @@ import prisma from "../prisma.js";
  * @type {import("../type-definitions.d").ExpressFunction}
  */
 const createGroup = async (req, res) => {
-    const data = req.body;
+    const data = req.data;
     try {
         const groupData = {
             ...data,
@@ -17,8 +17,11 @@ const createGroup = async (req, res) => {
         }
         console.log({ groupData })
         const group = await GroupModel.create(groupData)
-        res.status(200).send({ status: 'fail', group }).end()
+        res.status(200).send({ status: 'success', group }).end()
     } catch (error) {
+        if (error.message === 'group already exists') {
+            return res.status(400).send({ status: 'fail', message: 'group already exists' }).end()
+        }
         res.status(500).send({ status: 'fail', message: error.message }).end()
     }
 }
@@ -64,6 +67,11 @@ const getUserGroups = async (req, res, next) => {
             include: {
                 group: {
                     include: {
+                        members: {
+                            include: {
+                                member: true,
+                            },
+                        },
                         messages: {
                             include: {
                                 from: true,
@@ -82,43 +90,43 @@ const getUserGroups = async (req, res, next) => {
 }
 
 /** @type {import("../type-definitions.d").ExpressFunction} */
-const addGroupMember = async (req, res, next) => {
+const addGroupMember = async (req, res) => {
     try {
 
         const groupId = req.params.groupId;
-        const memberId = req.body.memberId;
+        /**@type {string[]} */
+        const members = req.body.members;
 
         if (!groupId) {
             return res.status(400).send({ status: 'fail', message: 'invalid group id' });
         }
 
-        if (!memberId) {
-            return res.status(400).send({ status: 'fail', message: 'no new member id provided' });
+        if (!members.length) {
+            return res.status(400).send({ status: 'fail', message: 'no members id provided' });
         }
 
-        const existingMember = await prisma.user.findUnique({
-            where: { id: memberId }
+        const data = members.map((memberId) => (
+            {
+                groupId,
+                memberId,
+            }
+        ))
+
+        await prisma.groupMember.createMany({
+            data: data
         })
-        if (!existingMember) {
-            return res.status(400).send({ status: 'fail', message: 'member with given id does not exist' }).end()
-        }
-        const group = await prisma.groupMember.create({
-            data: {
-                role: "user",
-                group: {
-                    connect: {
-                        id: groupId
-                    }
-                },
-                member: {
-                    connect: {
-                        id: memberId
-                    }
-                }
+
+        const group = await prisma.group.findUnique({
+            where: {
+                id: groupId
             },
             include: {
-                group: true,
-                member: true
+                members: {
+                    include: {
+                        member: true
+                    }
+                },
+                messages: true,
             }
         })
         res.send({ status: 'success', group }).end()

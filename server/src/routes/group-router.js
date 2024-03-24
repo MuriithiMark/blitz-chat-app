@@ -1,10 +1,13 @@
 import { Router } from "express";
 import GroupController from "../controllers/Group.controller.js";
+import { checkSchema } from "express-validator";
+import { newGroupSchema } from "../utils/validations/group_schema.js";
+import validateSchema from "../middle-wares/validate-schema.js";
 
 const groupRouter = Router();
 
 groupRouter.get("/", GroupController.getAllGroups);
-groupRouter.post("/", GroupController.createGroup);
+groupRouter.post("/", checkSchema(newGroupSchema), validateSchema, GroupController.createGroup);
 
 groupRouter.get("/user", GroupController.getUserGroups);
 

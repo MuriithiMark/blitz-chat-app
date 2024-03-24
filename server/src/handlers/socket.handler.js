@@ -28,20 +28,24 @@ const SocketHandler = async (socket) => {
         }
     })
 
-    socket.on("/groups/messages/new", (data) => {
-        console.log({ groupMessage: data })
+    socket.on("/groups/messages/new", async (data) => {
         try {
             const { newMessage } = data;
-            const message = prisma.groupMessage.create({
-                data: newMessage
+            const message = await prisma.groupMessage.create({
+                data: newMessage,
+                include: {
+                    from: true
+                }
             })
             const responseData = {
                 status: 'success',
                 message
             }
             // Emit only to room
+            socket.to(message.groupId).emit("/groups/messages/new", responseData);
+            socket.emit("/groups/messages/new", responseData);
         } catch (error) {
-            console.error(error);
+            console.error(`[GroupMessageModel.create] `, error);
         }
     })
 }
