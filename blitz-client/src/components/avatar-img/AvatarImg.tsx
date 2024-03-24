@@ -21,7 +21,7 @@ const AvatarImg = ({
   style,
   username,
   name,
-  extraQueryParams,
+  extraQueryParams = "background=random",
 }: AvatarImgProps) => {
   return (
     <img

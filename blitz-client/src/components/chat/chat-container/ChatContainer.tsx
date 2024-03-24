@@ -1,7 +1,8 @@
+import { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import "./chat-container.scss";
 import { RootState } from "../../../features/store";
-import { useContext, useEffect, useRef, useState } from "react";
 import { getUserFriends } from "../../../services/api/friends";
 import {
   Friend,
@@ -9,7 +10,7 @@ import {
   addFriends,
 } from "../../../features/friends/friends.slice";
 import AvatarImg from "../../avatar-img/AvatarImg";
-import { Message, setContext } from "../../../features/app/app.slice";
+import { setContext } from "../../../features/app/app.slice";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import useSocket from "../../../hooks/useSocket";
 import {
@@ -20,41 +21,153 @@ import {
 import { getUserGroups } from "../../../services/api/groups";
 import { MergedArrayDateSorted } from "../../../utils/merge-array";
 import { isGroup } from "../../../utils/type-guards";
+import PeopleFill from "../../icons/PeopleFill";
+import PenFill from "../../icons/PenFill";
+import {
+  toggleAddGroupMembers,
+  toggleCreateGroup,
+} from "../../../features/modals/modal.slice";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
+  const { user } = useContext(AuthContext);
   const app = useSelector((state: RootState) => state.app);
 
   useEffect(() => {
-    // fetch friends
-    getUserFriends()
-      .then((friends) => dispatch(addFriends(friends)))
-      .catch(console.error);
+    if (!user) return;
+    const loadData = async () => {
+      // fetch friends
+      getUserFriends()
+        .then((friends) => dispatch(addFriends(friends)))
+        .catch(console.error);
 
-    // fetch groups
-    getUserGroups()
-      .then((groups) => dispatch(addGroups(groups)))
-      .catch(console.error);
-  }, []);
+      // fetch groups
+      getUserGroups()
+        .then((groups) => dispatch(addGroups(groups)))
+        .catch(console.error);
+    };
+
+    loadData();
+  }, [user]);
 
   return (
     <div className="chat-container">
       <div className="side-bar">
-        <div className="top"></div>
+        <ChatSidebarTop />
         <ChatSidebarBottom />
       </div>
       {app.data && (
         <div className="main">
-          <div className="header">
-            <AvatarImg
-              src={app.data.avatarUrl}
-              username={isGroup(app.data) ? app.data.name : app.data.username}
-            />
-          </div>
+          <ChatHeader />
           <ChatContent />
           <ChatFooter />
         </div>
       )}
+    </div>
+  );
+};
+
+const ChatHeader = () => {
+  const app = useSelector((state: RootState) => state.app);
+  const dispatch = useDispatch();
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+
+  const handleMenuToggle = () => setMenuIsOpen(!menuIsOpen);
+  const handleCloseChat = async () =>
+    dispatch(
+      setContext({
+        contextId: undefined,
+        isGroup: false,
+        data: undefined,
+      })
+    );
+  const handleAddGroupMembers = async () => dispatch(toggleAddGroupMembers());
+  const handleLeaveGroup = async () => {
+    console.log("Handle Leave Group");
+  };
+  const handleBlockFriend = async () => {
+    console.log("Handle Block Friend");
+  };
+
+  const GroupMenu = () => {
+    return (
+      <>
+        <button onClick={handleAddGroupMembers}>
+          <span>Add Members</span>
+        </button>
+        <button onClick={handleCloseChat}>
+          <span>Close Chat</span>
+        </button>
+        <button onClick={handleLeaveGroup}>
+          <span>Leave Group</span>
+        </button>
+      </>
+    );
+  };
+
+  const FriendMenu = () => {
+    return (
+      <>
+        <button onClick={handleCloseChat}>
+          <span>Close Chat</span>
+        </button>
+        <button onClick={handleBlockFriend}>
+          <span>Block Friend</span>
+        </button>
+      </>
+    );
+  };
+
+  if (!app.data) {
+    return <></>;
+  }
+
+  return (
+    <div className="header">
+      <AvatarImg
+        src={app.data.avatarUrl}
+        username={isGroup(app.data) ? app.data.name : app.data.username}
+      />
+      <div className="bio">
+        <div className="username">
+          {isGroup(app.data) ? app.data.name : "@" + app.data.username}
+        </div>
+        <div className="status">{isGroup(app.data) ? "Group" : "Online"}</div>
+      </div>
+      <div className="actions">
+        <div
+          className="menu"
+          id="chat-header-context-menu"
+          style={{ display: menuIsOpen ? "flex" : "none" }}
+        >
+          {isGroup(app.data) ? <GroupMenu /> : <FriendMenu />}
+        </div>
+        <button onClick={handleMenuToggle}>Menu</button>
+      </div>
+    </div>
+  );
+};
+
+const ChatSidebarTop = () => {
+  const dispatch = useDispatch();
+  const handleCreateAGroup = () => {
+    try {
+      dispatch(toggleCreateGroup());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleWriteAPost = () => {};
+  return (
+    <div className="top">
+      <button onClick={handleCreateAGroup}>
+        <PeopleFill width={20} height={20} />
+        <span className="tooltip">Create a group</span>
+      </button>
+      <button onClick={handleWriteAPost}>
+        <PenFill width={20} height={20} />
+        <span className="tooltip">Write a Post</span>
+      </button>
     </div>
   );
 };
@@ -145,15 +258,19 @@ const ChatFooter = () => {
       let messageData = {
         newMessage: {
           content: text,
-          fromId: user.id,
           group: {
             connect: {
               id: app.contextId,
             },
           },
+          from: {
+            connect: {
+              id: user.id,
+            },
+          },
         },
       };
-      console.log("Group Message ", messageData);
+      socket.emit("/groups/messages/new", messageData);
     } else {
       let messageData = {
         newMessage: {
@@ -239,7 +356,43 @@ const FriendPreviewCard = ({ friend }: { friend: Friend }) => {
 };
 
 const GroupMessageCard = ({ message }: { message: GroupMessage }) => {
-  return <div>{message.content}</div>;
+  const { user } = useContext(AuthContext);
+  return (
+    <div className="message-card">
+      <div
+        className={
+          user?.id === message.from.id
+            ? "right wrapper group-message-wrapper"
+            : "left wrapper group-message-wrapper"
+        }
+      >
+        <div className="content group-content">
+          <div className="sender-info">
+            <AvatarImg
+              src={message.from.avatarUrl}
+              username={message.from.username}
+              extraQueryParams="background=random"
+              width="40px"
+              height="40px"
+            />
+            <span className="username">
+              {message.from.id === user?.id
+                ? "You"
+                : `@${message.from.username}`}
+            </span>
+          </div>
+          <span>{message.content}</span>
+        </div>
+        <span className="date">
+          {new Date(message.createdAt).toLocaleDateString("en", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          })}
+        </span>
+      </div>
+    </div>
+  );
 };
 
 const GroupPreviewCard = ({ group }: { group: Group }) => {

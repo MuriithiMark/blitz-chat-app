@@ -1,0 +1,43 @@
+.add-group-members {
+    background-color: white;
+    padding: 3em 3em 2em 3em;
+    width: 30em;
+    height: 90vh;
+
+    .select-friends-container {
+        height: 90%;
+        border: .02em solid gainsboro;
+
+        overflow-y: scroll;
+    }
+
+    .select-friend-card {
+        display: flex;
+        flex-direction: row;
+        gap: 1em;
+        border: .04em solid gainsboro;
+        margin: .2em;
+        padding: .2em 1em .2em 1em;
+        margin-left: 0;
+        margin-right: 0;
+        border-left: 0;
+        border-right: 0;
+
+        .check-div {
+            margin-left: auto;
+            height: 100%;
+            align-self: center;
+        }
+    }
+
+    .bottom {
+        height: 10%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .add-friend-btn {
+        padding: 1em;
+    }
+}
