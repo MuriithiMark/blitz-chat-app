@@ -1,0 +1,65 @@
+.profile-display-component {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1em;
+
+    .profile-bio {
+        height: 75%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        // justify-content: center;
+        gap: 1em;
+
+        .img-avatar {
+            width: 10em;
+            height: 10em;
+            border-radius: 2em;
+        }
+
+        .bio {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: .5em;
+
+            .username {
+                font-weight: 800;
+                font-size: 1.2em;
+                font-style: italic;
+                cursor: pointer;
+            }
+
+            .username:hover {
+                text-decoration: underline;
+                color: gray;
+            }
+
+            .name {
+                font-size: 1.0em;
+            }
+
+            .interests {
+                font-size: 1.4em;
+                font-weight: 700;
+                color: rgb(94, 93, 93);
+            }
+        }
+    }
+
+    .bottom {
+        height: 15%;
+        border-top: .04em solid gainsboro;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2em;
+
+        button {
+            width: 10em;
+            height: 3em;
+        }
+    }
+}

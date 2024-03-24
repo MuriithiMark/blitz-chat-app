@@ -34,17 +34,22 @@ const ChatContainer = () => {
   const app = useSelector((state: RootState) => state.app);
 
   useEffect(() => {
-    if (!user) return;
     const loadData = async () => {
       // fetch friends
       getUserFriends()
         .then((friends) => dispatch(addFriends(friends)))
-        .catch(console.error);
+        .catch((error) => {
+          console.error(error);
+          dispatch(addFriends([]))
+        });
 
       // fetch groups
       getUserGroups()
         .then((groups) => dispatch(addGroups(groups)))
-        .catch(console.error);
+        .catch((error) => {
+          console.error(error);
+          dispatch(addGroups([]))
+        });
     };
 
     loadData();

@@ -4,3 +4,14 @@
     padding: 0;
     margin: 0;
 }
+
+button {
+    cursor: pointer;
+}
+
+.icon-btn {
+    appearance: none;
+    background: none;
+    outline: none;
+    border: none;
+}

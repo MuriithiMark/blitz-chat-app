@@ -4,6 +4,7 @@ import modalSlice from "./modals/modal.slice";
 import friendsSlice from "./friends/friends.slice";
 import appSlice from "./app/app.slice";
 import groupsSlice from "./groups/groups.slice";
+import notificationsSlice from "./notifications/notifications.slice";
 
 const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
         modal: modalSlice,
         friends: friendsSlice,
         groups: groupsSlice,
+        notifications: notificationsSlice
     }
 })
 
