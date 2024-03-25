@@ -3,12 +3,18 @@ import AvatarImg from "../../avatar-img/AvatarImg";
 import "./profile-display.scss";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import XLarge from "../../icons/XLarge";
+import { useDispatch } from "react-redux";
+import { setContext } from "../../../features/app/app.slice";
 
 const ProfileDisplay = ({ onClose }: { onClose: () => void }) => {
   const { user, logout } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   const handleLogout = async () => {
     await logout();
+    dispatch(
+      setContext({ contextId: undefined, data: undefined, isGroup: false })
+    );
     onClose();
   };
 

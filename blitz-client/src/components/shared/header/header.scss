@@ -81,6 +81,18 @@ header {
     }
 }
 
+.logo {
+    margin-left: 2em;
+    .logo-link {
+        text-decoration: none;
+    }
+
+    .logo-span {
+        font-size: 2em;
+        font-family: "Pacifico", cursive;
+    }
+}
+
 @keyframes fade-in {
     from {
         opacity: 0;

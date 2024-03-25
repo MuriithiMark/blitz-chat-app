@@ -62,7 +62,9 @@ const Header = () => {
       )}
       <header>
         <div className="logo">
-          <Link to="/">Home</Link>
+          <Link to="/" className="logo-link">
+            <span className="logo-span">blitz</span>
+          </Link>
         </div>
         <nav className="nav"></nav>
         <div className="header-actions">
