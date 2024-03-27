@@ -131,6 +131,9 @@ model GroupMessage {
   fromId    String
   groupId   String
   content   String
+  hasFile   Boolean  @default(false)
+  filePath  String?
+  fileType  String?
   createdAt DateTime @default(now())
   isDeleted Boolean  @default(false)
   group     Group    @relation(fields: [groupId], references: [id])
@@ -141,6 +144,9 @@ model UserMessage {
   id           String     @id @default(uuid())
   friendShipId String // can only privately message friends
   content      String
+  hasFile      Boolean    @default(false)
+  filePath     String?
+  fileType     String?
   senderId     String
   recipientId  String
   createdAt    DateTime   @default(now())
@@ -148,10 +154,13 @@ model UserMessage {
 }
 
 model Notification {
-  id         String @id @default(uuid())
+  id         String  @id @default(uuid())
   userId     String
+  type       String
+  groupId    String?
+  from       String?
   title      String
   content    String
-  alertLevel String @default("info") // possible values -> info/warn
-  user       User   @relation(fields: [userId], references: [id])
+  alertLevel String  @default("info") // possible values -> info/warn
+  user       User    @relation(fields: [userId], references: [id])
 }

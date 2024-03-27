@@ -7,6 +7,7 @@ import store from "../features/store";
 import { newContextMessage } from "../features/app/app.slice";
 import { Friend, FriendshipMessage, newFriendsMessage } from "../features/friends/friends.slice";
 import { GroupMessage, newGroupMessage } from "../features/groups/groups.slice";
+import { Notification, newNotification } from "../features/notifications/notifications.slice";
 
 type NewUserMessageResponse = {
     status: 'success',
@@ -21,6 +22,14 @@ type NewGroupMessageResponse = ({
     message: GroupMessage
 } | {
     status: 'fail';
+    message: string
+})
+
+type NewNotificationResponse = ({
+    status: 'success',
+    notification: Notification
+} | {
+    status: 'fail',
     message: string
 })
 
@@ -58,6 +67,19 @@ const useSocket = () => {
         dispatch(newGroupMessage(message))
     }
 
+    const onNewNotification = async (data: NewNotificationResponse) => {
+        console.log('Notification: ', data)
+        if (data.status === 'fail') {
+            console.error(data);
+            return;
+        }
+
+        const { notification } = data;
+        console.log({ notification })
+        const app = store.getState().notifications;
+        dispatch(newNotification(notification))
+    }
+
     useEffect(() => {
         if (!user) {
             socket.off()
@@ -72,6 +94,7 @@ const useSocket = () => {
             // place all listeners here
             socket.on("/friends/messages/new", onNewUserMessage)
             socket.on("/groups/messages/new", onNewGroupMessage)
+            socket.on("/notifications/new", onNewNotification)
         }
 
         return () => {

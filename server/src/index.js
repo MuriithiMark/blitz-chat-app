@@ -14,6 +14,7 @@ import userMessageRouter from "./routes/user-message.router.js";
 import groupRouter from "./routes/group-router.js";
 import SocketHandler from "./handlers/socket.handler.js";
 import prisma from "./prisma.js";
+import uploadRouter from "./routes/upload-router.js";
 
 
 dotenv.config()
@@ -29,6 +30,7 @@ const CORS_OPTIONS = {
 
 app.use(cors(CORS_OPTIONS));
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(session({
     secret: SECRET_KEY,
@@ -41,12 +43,14 @@ app.use(session({
     }
 }))
 app.use(headerModifier)
+app.use("/public", express.static("public"))
 
 app.use("/auth", authRouter);
 app.use("/users", protectedRoute, usersRouter);
 app.use("/friends", protectedRoute, friendShipRouter);
 app.use("/users/messages", protectedRoute, userMessageRouter);
 app.use("/groups", protectedRoute, groupRouter);
+app.use(uploadRouter);
 app.all("*", (req, res) => {
     res.status(404).send({ status: "fail", message: "not found" }).end()
 })

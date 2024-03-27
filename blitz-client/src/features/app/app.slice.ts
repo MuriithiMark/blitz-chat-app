@@ -4,7 +4,10 @@ import { Group } from "../groups/groups.slice";
 
 export interface Message {
     id: string;
-    content: string;
+    content: string
+    hasFile: boolean;
+    filePath?: string;
+    fileType?: string;
     createdAt: Date;
 }
 
@@ -12,7 +15,7 @@ type App = {
     socketFired: boolean;
     contextId?: string;
     isGroup: boolean;
-    data?:  Group | Friend
+    data?: Group | Friend
 }
 
 

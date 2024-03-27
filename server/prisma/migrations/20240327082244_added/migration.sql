@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE `GroupMessage` ADD COLUMN `filePath` VARCHAR(191) NULL,
+    ADD COLUMN `fileType` VARCHAR(191) NULL,
+    ADD COLUMN `hasFile` BOOLEAN NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE `UserMessage` ADD COLUMN `filePath` VARCHAR(191) NULL,
+    ADD COLUMN `fileType` VARCHAR(191) NULL,
+    ADD COLUMN `hasFile` BOOLEAN NOT NULL DEFAULT false;

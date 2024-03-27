@@ -10,7 +10,7 @@ import {
   addFriends,
 } from "../../../features/friends/friends.slice";
 import AvatarImg from "../../avatar-img/AvatarImg";
-import { setContext } from "../../../features/app/app.slice";
+import { Message, setContext } from "../../../features/app/app.slice";
 import AuthContext from "../../../contexts/auth/AuthContext";
 import useSocket from "../../../hooks/useSocket";
 import {
@@ -27,6 +27,8 @@ import {
   toggleAddGroupMembers,
   toggleCreateGroup,
 } from "../../../features/modals/modal.slice";
+import { SERVER_URL } from "../../../utils/constants";
+import FileInput from "../../file-input/FileInput";
 
 const ChatContainer = () => {
   const dispatch = useDispatch();
@@ -40,7 +42,7 @@ const ChatContainer = () => {
         .then((friends) => dispatch(addFriends(friends)))
         .catch((error) => {
           console.error(error);
-          dispatch(addFriends([]))
+          dispatch(addFriends([]));
         });
 
       // fetch groups
@@ -48,7 +50,7 @@ const ChatContainer = () => {
         .then((groups) => dispatch(addGroups(groups)))
         .catch((error) => {
           console.error(error);
-          dispatch(addGroups([]))
+          dispatch(addGroups([]));
         });
     };
 
@@ -241,6 +243,9 @@ const ChatContent = () => {
 
 const ChatFooter = () => {
   const [text, setText] = useState("");
+  const [filePath, setFilePath] = useState("");
+  const [fileType, setFileType] = useState("");
+  const fileRef = useRef<HTMLInputElement>();
   const { user } = useContext(AuthContext);
   const app = useSelector((state: RootState) => state.app);
   const socket = useSocket();
@@ -263,6 +268,9 @@ const ChatFooter = () => {
       let messageData = {
         newMessage: {
           content: text,
+          hasFile: filePath.length > 0,
+          filePath,
+          fileType,
           group: {
             connect: {
               id: app.contextId,
@@ -280,6 +288,14 @@ const ChatFooter = () => {
       let messageData = {
         newMessage: {
           content: text,
+          hasFile: filePath.length > 0,
+          filePath,
+          fileType,
+          // from: {
+          //   connect: {
+          //     id: user.id,
+          //   },
+          // },
           senderId: user.id,
           recipientId: app.data!.id,
           friendShip: {
@@ -293,13 +309,37 @@ const ChatFooter = () => {
       };
       socket.emit(`/friends/messages/new`, messageData);
     }
+    if(fileRef && fileRef.current) {
+      fileRef.current.value = ""
+    }
     setText("");
+  };
+
+  const handleFileSelect = ({
+    filePath,
+    fileType,
+  }: {
+    filePath: string;
+    fileType: string;
+  }) => {
+    setFilePath(filePath);
+    setFileType(fileType);
   };
 
   return (
     <div className="footer" onKeyDown={handleKeyDown}>
+      <FileInput
+        onFileSelect={handleFileSelect}
+        required={false}
+        // @ts-ignore
+        fileInputRef={fileRef}
+      />
       <input type="text" value={text} onChange={handleChange} />
-      <button className="send-btn" onClick={handleSendMessage}>
+      <button
+        className="send-btn"
+        onClick={handleSendMessage}
+        disabled={!filePath || !text}
+      >
         Send
       </button>
     </div>
@@ -317,7 +357,8 @@ const FriendMessageCard = ({ message }: { message: FriendshipMessage }) => {
         }
       >
         <div className="content">
-          <span>{message.content}</span>
+          {message.hasFile && <FileMessage message={message} />}
+          {message.content && <span>{message.content}</span>}
         </div>
         <span className="date">
           {new Date(message.createdAt).toLocaleDateString("en", {
@@ -387,6 +428,10 @@ const GroupMessageCard = ({ message }: { message: GroupMessage }) => {
             </span>
           </div>
           <span>{message.content}</span>
+          <div className="content">
+            {message.hasFile && <FileMessage message={message} />}
+            {message.content && <span>{message.content}</span>}
+          </div>
         </div>
         <span className="date">
           {new Date(message.createdAt).toLocaleDateString("en", {
@@ -425,6 +470,29 @@ const GroupPreviewCard = ({ group }: { group: Group }) => {
       <div className="info">
         <span>{group.name}</span>
       </div>
+    </div>
+  );
+};
+
+const FileMessage = ({ message }: { message: Message }) => {
+  return (
+    <div className="file-message">
+      {(message.fileType === "image" ||
+        message.fileType === "jpeg" ||
+        message.fileType === "png" ||
+        message.fileType === "gif") && (
+        <div className="file-message">
+          <img
+            src={SERVER_URL + "/" + message.filePath}
+            alt={message.filePath}
+          />
+        </div>
+      )}
+      {(message.fileType === "video" || message.fileType === "mkv") && (
+        <div className="file-message">
+          <video src={SERVER_URL + "/" + message.filePath} controls></video>
+        </div>
+      )}
     </div>
   );
 };
