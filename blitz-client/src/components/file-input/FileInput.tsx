@@ -10,23 +10,25 @@ type FileInputProps = {
     fileType: string;
   }) => void;
   fileReset?: boolean;
+  onFileResetUnset: () => void;
   required: boolean;
   fileInputRef?: React.RefObject<HTMLInputElement> | null;
   value?: null;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+type InputChange = React.ChangeEvent<HTMLInputElement>;
+
 const FileInput = ({
   onFileSelect,
   fileReset = false,
   required,
-  fileInputRef,
-  value,
-  onChange,
+  onFileResetUnset,
 }: FileInputProps) => {
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+
+  const fileInputRef =  useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (event: InputChange) => {
     try {
       const fileMessage = event.target.files![0];
       if (!fileMessage) {
@@ -35,25 +37,24 @@ const FileInput = ({
       const formData = new FormData();
       formData.append("file", fileMessage);
       const response = await axios.post("/uploads", formData);
+
+      // unset previous file reset
+      onFileResetUnset();
       onFileSelect({
         filePath: response.data.filePath,
         fileType: response.data.fileType,
       });
-      if (fileInputRef && fileInputRef.current) {
-        // fileRef.current.value = "";
-      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  // useEffect(() => {
-  //   if (fileReset && fileRef.current) {
-  //     console.log('should reset files')
-  //     fileRef.current.files = null;
-  //     fileRef.current.value = "";
-  //   }
-  // }, [fileReset]);
+  useEffect(() => {
+    // resets the file input to null
+    if (fileReset && fileInputRef && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [fileReset]);
 
   return (
     <div className="file-input">
