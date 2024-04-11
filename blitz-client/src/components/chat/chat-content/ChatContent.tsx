@@ -57,7 +57,6 @@ const GroupMessageCard = ({ message }: { message: GroupMessage }) => {
               extraQueryParams="background=random"
               width="40px"
               height="40px"
-              // style={{ borderRadius: '10px'}}
             />
             <span className="username">
               {message.from.id === user?.id
