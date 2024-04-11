@@ -41,7 +41,7 @@ const ChatFooter = () => {
       // handle group messages
       let messageData = {
         newMessage: {
-          content: text,
+          content: text.trim(),
           hasFile: filePath.length > 0,
           filePath,
           fileType,
@@ -61,7 +61,7 @@ const ChatFooter = () => {
     } else {
       let messageData = {
         newMessage: {
-          content: text,
+          content: text.trim(),
           hasFile: filePath.length > 0,
           filePath,
           fileType,
@@ -103,7 +103,7 @@ const ChatFooter = () => {
       <button
         className="send-btn"
         onClick={handleSendMessage}
-        disabled={!filePath && !text}
+        disabled={!filePath && (!text || !text.trim())}
       >
         Send
       </button>

@@ -155,7 +155,7 @@
     width: 100%;
     display: flex;
     height: auto;
-    margin-bottom: .2em;
+    margin-bottom: .5em;
 
     .wrapper {
         width: 60%;
@@ -163,7 +163,8 @@
         display: flex;
         flex-direction: column;
         gap: .4em;
-        border: .03em solid gainsboro;
+        border-radius: .5em;
+        // border: .03em solid gainsboro;
 
         .content {
             padding: .4em;
@@ -175,12 +176,12 @@
 
             .file-container {
                 width: 100%;
-                // height: 20em;
 
                 img,
                 video {
                     max-width: 100%;
                     max-height: 20em;
+                    border-radius: .5em;
                 }
             }
         }
@@ -220,15 +221,19 @@
 
     .right {
         margin-left: auto;
+        margin-right: 1em;
         text-align: right;
-
-        .content {
-            // background-color: orange
-        }
+        background-color: gainsboro;
     }
 
     .left {
         margin-right: auto;
+        background-color: blueviolet;
+
+        .date {
+            color: black !important;
+            opacity: .8;
+        }
     }
 }
 
