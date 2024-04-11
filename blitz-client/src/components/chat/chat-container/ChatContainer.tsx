@@ -309,8 +309,8 @@ const ChatFooter = () => {
       };
       socket.emit(`/friends/messages/new`, messageData);
     }
-    if(fileRef && fileRef.current) {
-      fileRef.current.value = ""
+    if (fileRef && fileRef.current) {
+      fileRef.current.value = "";
     }
     setText("");
   };
@@ -475,23 +475,46 @@ const GroupPreviewCard = ({ group }: { group: Group }) => {
 };
 
 const FileMessage = ({ message }: { message: Message }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleFileLoad = async () => {
+    console.log("Has loaded");
+    setIsLoaded(true);
+  };
+
+  // useEffect(() => {
+
+  // }, []);
   return (
-    <div className="file-message">
+    <div
+      className="file-container"
+      style={
+        isLoaded
+          ? {}
+          : {
+              height: "20em",
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.7)"
+            }
+      }
+    >
       {(message.fileType === "image" ||
         message.fileType === "jpeg" ||
         message.fileType === "png" ||
         message.fileType === "gif") && (
-        <div className="file-message">
-          <img
-            src={SERVER_URL + "/" + message.filePath}
-            alt={message.filePath}
-          />
-        </div>
+        <img
+          src={SERVER_URL + "/" + message.filePath}
+          alt={message.filePath}
+          onLoad={handleFileLoad}
+        />
       )}
       {(message.fileType === "video" || message.fileType === "mkv") && (
-        <div className="file-message">
-          <video src={SERVER_URL + "/" + message.filePath} controls></video>
-        </div>
+        <video
+          src={SERVER_URL + "/" + message.filePath}
+          controls
+          onLoad={handleFileLoad}
+        ></video>
       )}
     </div>
   );
