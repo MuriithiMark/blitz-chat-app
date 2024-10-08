@@ -12,7 +12,9 @@ const ChatSidebarTop = () => {
       console.error(error);
     }
   };
+
   const handleWriteAPost = () => {};
+  const handleAddFriends = () => {};
   return (
     <div className="top">
       <button onClick={handleCreateAGroup}>
@@ -22,6 +24,10 @@ const ChatSidebarTop = () => {
       <button onClick={handleWriteAPost}>
         <PenFill width={20} height={20} />
         <span className="tooltip">Write a Post</span>
+      </button>
+      <button onClick={handleAddFriends}>
+        <span>Add Friends</span>
+        <span className="tooltip">Add Friends</span>
       </button>
     </div>
   );
